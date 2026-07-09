@@ -1,0 +1,2826 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="ViajesCOL: agencia de viajes en Colombia para comparar y encontrar ofertas de viajes nacionales. Busca ofertas por ciudad y mes."
+    />
+    <link rel="icon" href="images/favicon.png?v=2" type="image/png" sizes="32x32" />
+    <link rel="shortcut icon" href="images/favicon.png?v=2" type="image/png" />
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=2" sizes="180x180" />
+    <title>ViajesCOL | Agencia de viajes en Colombia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700;14..32,800;14..32,900&family=Orbitron:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+    <style>
+      /* ===== ROOT ===== */
+      :root {
+        --royal-blue: #0033A0;
+        --royal-blue-light: #1a4db8;
+        --royal-blue-dark: #002277;
+        --royal-blue-glow: rgba(0, 51, 160, 0.15);
+        --royal-blue-gradient: linear-gradient(135deg, #0033A0, #1a4db8, #002277);
+        --white: #FFFFFF;
+        --off-white: #F0F4FF;
+        --gray-50: #E8EDF8;
+        --gray-100: #D5DCE8;
+        --gray-300: #A8B5CC;
+        --gray-500: #6A7A96;
+        --gray-700: #2D3A52;
+        --gray-900: #0A1424;
+        --gold: #F5C842;
+        --gold-light: #FFDE6B;
+        --gold-glow: rgba(245, 200, 66, 0.2);
+        --radius-sm: 12px;
+        --radius-md: 18px;
+        --radius-lg: 24px;
+        --radius-xl: 32px;
+        --shadow-card: 0 8px 40px rgba(0, 51, 160, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+        --shadow-card-hover: 0 12px 48px rgba(0, 51, 160, 0.18), 0 4px 12px rgba(0, 0, 0, 0.06);
+        --shadow-elevated: 0 20px 60px rgba(0, 51, 160, 0.15);
+        --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        --glow-blue: 0 0 40px rgba(0, 51, 160, 0.08);
+        --glow-gold: 0 0 40px rgba(245, 200, 66, 0.08);
+        --border-glow: 0 0 20px rgba(0, 51, 160, 0.05);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--off-white);
+        color: var(--gray-900);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-image: 
+          radial-gradient(ellipse at 20% 50%, rgba(0, 51, 160, 0.03) 0%, transparent 60%),
+          radial-gradient(ellipse at 80% 20%, rgba(245, 200, 66, 0.02) 0%, transparent 50%);
+        min-height: 100vh;
+        overflow: hidden;
+      }
+
+      body.cookies-accepted {
+        overflow: auto;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      select:focus-visible,
+      input:focus-visible {
+        outline: 2px solid var(--royal-blue);
+        outline-offset: 2px;
+        box-shadow: 0 0 0 4px var(--royal-blue-glow);
+      }
+
+      /* ===== COOKIES OVERLAY ===== */
+      .cookies-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: var(--off-white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        transition: opacity 0.6s ease, visibility 0.6s ease;
+        opacity: 1;
+        visibility: visible;
+        background-image: 
+          radial-gradient(ellipse at 20% 50%, rgba(0, 51, 160, 0.05) 0%, transparent 60%),
+          radial-gradient(ellipse at 80% 20%, rgba(245, 200, 66, 0.03) 0%, transparent 50%);
+      }
+
+      .cookies-overlay.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .cookies-container {
+        width: min(520px, 100%);
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border-radius: var(--radius-xl);
+        padding: 40px 36px 36px;
+        box-shadow: var(--shadow-elevated), var(--glow-blue);
+        border: 1px solid rgba(0, 51, 160, 0.06);
+        text-align: center;
+        animation: scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .cookies-container::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -30%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(0, 51, 160, 0.04) 0%, transparent 70%);
+        pointer-events: none;
+        border-radius: 50%;
+      }
+
+      .cookies-container::after {
+        content: "";
+        position: absolute;
+        bottom: -40%;
+        left: -20%;
+        width: 250px;
+        height: 250px;
+        background: radial-gradient(circle, rgba(245, 200, 66, 0.05) 0%, transparent 70%);
+        pointer-events: none;
+        border-radius: 50%;
+      }
+
+      .cookies-container > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      @keyframes scaleIn {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+      }
+
+      .cookies-description {
+        color: var(--gray-500);
+        font-size: 15px;
+        line-height: 1.8;
+        max-width: 90%;
+        margin: 0 auto 8px;
+      }
+
+      .cookies-description a {
+        color: var(--royal-blue);
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        transition: var(--transition);
+      }
+
+      .cookies-description a:hover {
+        color: var(--royal-blue-dark);
+        opacity: 0.8;
+      }
+
+      .cookies-divider {
+        width: 60px;
+        height: 3px;
+        background: var(--royal-blue-gradient);
+        border-radius: 2px;
+        margin: 16px auto 24px;
+        opacity: 0.3;
+      }
+
+      .cookies-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn-cookie {
+        padding: 14px 40px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        font-size: 13px;
+        min-width: 160px;
+      }
+
+      .btn-cookie-accept {
+        background: var(--royal-blue-gradient);
+        color: white;
+        box-shadow: 0 4px 24px rgba(0, 51, 160, 0.35);
+      }
+
+      .btn-cookie-accept:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 8px 40px rgba(0, 51, 160, 0.45);
+      }
+
+      .btn-cookie-accept:active {
+        transform: scale(0.97);
+      }
+
+      .btn-cookie-reject {
+        background: rgba(0, 51, 160, 0.06);
+        color: var(--gray-700);
+        border: 1.5px solid var(--gray-100);
+      }
+
+      .btn-cookie-reject:hover {
+        background: rgba(0, 51, 160, 0.10);
+        border-color: var(--gray-300);
+        transform: translateY(-3px);
+        box-shadow: var(--glow-blue);
+      }
+
+      .btn-cookie-reject:active {
+        transform: scale(0.97);
+      }
+
+      .cookies-footer-text {
+        margin-top: 20px;
+        font-size: 12px;
+        color: var(--gray-300);
+        font-weight: 500;
+      }
+
+      @media (max-width: 520px) {
+        .cookies-container {
+          padding: 28px 20px 24px;
+        }
+
+        .cookies-description {
+          font-size: 14px;
+          max-width: 100%;
+        }
+
+        .btn-cookie {
+          padding: 12px 28px;
+          font-size: 12px;
+          min-width: 130px;
+          width: 100%;
+        }
+
+        .cookies-buttons {
+          flex-direction: column;
+          width: 100%;
+        }
+      }
+
+      /* ===== SCROLLBAR FUTURISTA ===== */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: var(--gray-50);
+        border-radius: 10px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, var(--royal-blue), var(--royal-blue-dark));
+        border-radius: 10px;
+        border: 2px solid var(--gray-50);
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--royal-blue-dark);
+      }
+
+      /* ===== CONTENIDO PRINCIPAL ===== */
+      #mainContent {
+        opacity: 0;
+        transition: opacity 0.8s ease;
+      }
+
+      #mainContent.visible {
+        opacity: 1;
+      }
+
+      /* ===== CONTAINER ===== */
+      .container {
+        width: min(1200px, calc(100% - 48px));
+        margin: 0 auto;
+      }
+
+      /* ===== TOPBAR ===== */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.82);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border-bottom: 1px solid rgba(0, 51, 160, 0.06);
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02), var(--glow-blue);
+      }
+
+      .topbar-inner {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 0;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 900;
+        font-size: 18px;
+        color: var(--royal-blue);
+        letter-spacing: -0.5px;
+        flex-shrink: 0;
+        font-family: 'Orbitron', monospace;
+        text-transform: uppercase;
+      }
+
+      .brand-badge {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-sm);
+        background: var(--royal-blue-gradient);
+        display: grid;
+        place-items: center;
+        color: white;
+        font-weight: 900;
+        font-size: 14px;
+        box-shadow: 0 4px 16px var(--royal-blue-glow);
+        position: relative;
+        overflow: hidden;
+        font-family: 'Orbitron', monospace;
+      }
+
+      .brand-badge::after {
+        content: "";
+        position: absolute;
+        inset: 2px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        pointer-events: none;
+      }
+
+      .brand-badge::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+        pointer-events: none;
+      }
+
+      .brand .highlight {
+        color: var(--gray-700);
+        font-weight: 700;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .nav a {
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--gray-700);
+        transition: var(--transition);
+        letter-spacing: -0.2px;
+        position: relative;
+      }
+
+      .nav a::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 50px;
+        padding: 1px;
+        background: linear-gradient(135deg, transparent 40%, var(--royal-blue-glow) 100%);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: var(--transition);
+      }
+
+      .nav a:hover {
+        background: var(--royal-blue-glow);
+        color: var(--royal-blue);
+        transform: translateY(-1px);
+      }
+
+      .nav a:hover::before {
+        opacity: 1;
+      }
+
+      .nav a.whatsapp-link {
+        background: #25D366;
+        color: white;
+        padding: 8px 20px;
+        box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);
+        border: none;
+      }
+
+      .nav a.whatsapp-link::before {
+        display: none;
+      }
+
+      .nav a.whatsapp-link:hover {
+        background: #1da851;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(37, 211, 102, 0.4);
+      }
+
+      .menu-btn {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--gray-100);
+        background: white;
+        color: var(--gray-900);
+        cursor: pointer;
+        flex: 0 0 auto;
+        transition: var(--transition);
+      }
+
+      .menu-btn:hover {
+        background: var(--gray-50);
+        border-color: var(--gray-300);
+        box-shadow: var(--glow-blue);
+      }
+
+      .menu-icon {
+        width: 20px;
+        height: 14px;
+        position: relative;
+        display: inline-block;
+      }
+
+      .menu-icon::before,
+      .menu-icon::after,
+      .menu-icon span {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 2.5px;
+        border-radius: 999px;
+        background: var(--gray-700);
+        transition: var(--transition);
+      }
+
+      .menu-icon::before { top: 0; }
+      .menu-icon span { top: 5.5px; }
+      .menu-icon::after { bottom: 0; }
+
+      @media (max-width: 1024px) {
+        .nav {
+          display: none;
+        }
+        .menu-btn {
+          display: inline-flex;
+        }
+      }
+
+      /* ===== MOBILE MENU ===== */
+      .mobile-menu {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        background: rgba(0, 51, 160, 0.3);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 20px;
+        animation: fadeIn 0.25s ease;
+      }
+
+      .mobile-menu[hidden] {
+        display: none;
+      }
+
+      .mobile-menu-panel {
+        margin-left: auto;
+        width: min(380px, 100%);
+        border-radius: var(--radius-lg);
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        box-shadow: var(--shadow-elevated);
+        overflow: hidden;
+        animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(0, 51, 160, 0.06);
+      }
+
+      .mobile-menu-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--gray-100);
+      }
+
+      .mobile-menu-title {
+        font-weight: 900;
+        font-size: 18px;
+        color: var(--royal-blue);
+        letter-spacing: -0.3px;
+        font-family: 'Orbitron', monospace;
+        text-transform: uppercase;
+      }
+
+      .menu-close {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid var(--gray-100);
+        background: white;
+        color: var(--gray-700);
+        cursor: pointer;
+        font-size: 20px;
+        font-weight: 400;
+        transition: var(--transition);
+      }
+
+      .menu-close:hover {
+        background: var(--gray-50);
+        border-color: var(--royal-blue);
+        box-shadow: var(--glow-blue);
+      }
+
+      .mobile-menu-links {
+        display: grid;
+        padding: 12px;
+        gap: 4px;
+        max-height: 60vh;
+        overflow-y: auto;
+      }
+
+      .mobile-menu-links a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        color: var(--gray-700);
+        transition: var(--transition);
+      }
+
+      .mobile-menu-links a:hover {
+        background: var(--royal-blue-glow);
+        color: var(--royal-blue);
+        transform: translateX(4px);
+      }
+
+      .mobile-menu-links a.whatsapp-link {
+        background: #25D366;
+        color: white;
+        margin-top: 8px;
+        justify-content: center;
+      }
+
+      .mobile-menu-links a.whatsapp-link:hover {
+        background: #1da851;
+        transform: translateX(0) scale(1.02);
+      }
+
+      .mobile-menu-foot {
+        padding: 14px 20px;
+        color: var(--gray-500);
+        font-size: 12px;
+        border-top: 1px solid var(--gray-100);
+        text-align: center;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      @keyframes slideInRight {
+        from { transform: translateX(30px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+
+      /* ===== HERO ===== */
+      .hero {
+        padding: 48px 0 32px;
+      }
+
+      .hero-grid {
+        display: grid;
+        gap: 28px;
+        grid-template-columns: 1.2fr 0.8fr;
+        align-items: stretch;
+      }
+
+      @media (max-width: 900px) {
+        .hero-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-card), var(--glow-blue);
+        border: 1px solid rgba(0, 51, 160, 0.06);
+        transition: var(--transition);
+      }
+
+      .card:hover {
+        box-shadow: var(--shadow-card-hover), var(--glow-blue);
+        border-color: rgba(0, 51, 160, 0.12);
+        transform: translateY(-2px);
+      }
+
+      .hero-card {
+        padding: 32px 36px;
+        position: relative;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 51, 160, 0.06);
+      }
+
+      .hero-card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -30%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(0, 51, 160, 0.06) 0%, transparent 70%);
+        pointer-events: none;
+        border-radius: 50%;
+        animation: pulseGlow 8s ease-in-out infinite;
+      }
+
+      .hero-card::after {
+        content: "";
+        position: absolute;
+        bottom: -40%;
+        left: -20%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(245, 200, 66, 0.08) 0%, transparent 70%);
+        pointer-events: none;
+        border-radius: 50%;
+        animation: pulseGlow 10s ease-in-out infinite reverse;
+      }
+
+      @keyframes pulseGlow {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.1); opacity: 1; }
+      }
+
+      .hero-card > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 16px;
+        border-radius: 50px;
+        background: var(--royal-blue-glow);
+        color: var(--royal-blue);
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        border: 1px solid rgba(0, 51, 160, 0.08);
+        backdrop-filter: blur(5px);
+      }
+
+      .hero-badge .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #25D366;
+        display: inline-block;
+        animation: blink 1.5s ease-in-out infinite;
+      }
+
+      @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
+      }
+
+      h1 {
+        font-size: clamp(28px, 3.4vw, 44px);
+        font-weight: 900;
+        line-height: 1.12;
+        letter-spacing: -0.02em;
+        color: var(--gray-900);
+        margin: 4px 0 12px;
+      }
+
+      h1 .highlight {
+        background: var(--royal-blue-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+      }
+
+      h1 .highlight::after {
+        content: "";
+        position: absolute;
+        bottom: 2px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--royal-blue-gradient);
+        border-radius: 2px;
+        opacity: 0.2;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .lead {
+        font-size: 16px;
+        color: var(--gray-500);
+        max-width: 90%;
+        margin-bottom: 20px;
+        line-height: 1.8;
+      }
+
+      .trust-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 8px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 18px;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(5px);
+        border: 1px solid var(--gray-100);
+        color: var(--gray-700);
+        font-weight: 600;
+        font-size: 13px;
+        transition: var(--transition);
+      }
+
+      .pill:hover {
+        border-color: var(--royal-blue);
+        box-shadow: var(--glow-blue);
+        transform: translateY(-1px);
+      }
+
+      .pill .icon {
+        font-size: 16px;
+      }
+
+      .tiny {
+        font-size: 12px;
+        color: var(--gray-500);
+        font-weight: 500;
+        line-height: 1.6;
+      }
+
+      .hero-cta-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+
+      /* ===== SEARCH CARD ===== */
+      .search-card {
+        padding: 24px 28px;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 51, 160, 0.06);
+      }
+
+      .search-title {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+
+      .search-title h2 {
+        font-size: 18px;
+        font-weight: 900;
+        color: var(--gray-900);
+        letter-spacing: -0.3px;
+      }
+
+      .search-title h2 span {
+        color: var(--royal-blue);
+        font-family: 'Orbitron', monospace;
+        font-weight: 700;
+      }
+
+      .hint {
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--gray-500);
+        background: var(--gray-50);
+        padding: 4px 14px;
+        border-radius: 50px;
+        border: 1px solid var(--gray-100);
+      }
+
+      form {
+        display: grid;
+        gap: 14px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .field label {
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--gray-700);
+        letter-spacing: -0.2px;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+      }
+
+      .field input,
+      .field select {
+        width: 100%;
+        border-radius: var(--radius-sm);
+        border: 1.5px solid var(--gray-100);
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(5px);
+        color: var(--gray-900);
+        padding: 12px 14px;
+        font-weight: 600;
+        font-size: 14px;
+        font-family: inherit;
+        transition: var(--transition);
+      }
+
+      .field input:focus,
+      .field select:focus {
+        border-color: var(--royal-blue);
+        background: white;
+        box-shadow: 0 0 0 4px var(--royal-blue-glow), var(--glow-blue);
+        transform: translateY(-1px);
+      }
+
+      .field input::placeholder {
+        color: var(--gray-300);
+        font-weight: 400;
+      }
+
+      .row2 {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      @media (max-width: 520px) {
+        .row2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Trip toggle */
+      .trip-toggle {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin: 2px 0 4px;
+      }
+
+      .trip-radio {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+
+      .trip-pill {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: var(--radius-sm);
+        padding: 12px 14px;
+        font-weight: 700;
+        font-size: 14px;
+        border: 1.5px solid var(--gray-100);
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(5px);
+        color: var(--gray-700);
+        cursor: pointer;
+        user-select: none;
+        transition: var(--transition);
+      }
+
+      .trip-pill:hover {
+        border-color: var(--gray-300);
+        background: white;
+        transform: translateY(-1px);
+      }
+
+      .trip-radio:checked + .trip-pill {
+        background: var(--royal-blue-gradient);
+        color: white;
+        border-color: var(--royal-blue);
+        box-shadow: 0 4px 20px var(--royal-blue-glow);
+        transform: translateY(-1px);
+      }
+
+      .trip-radio:focus-visible + .trip-pill {
+        outline: 2px solid var(--royal-blue);
+        outline-offset: 2px;
+      }
+
+      /* Buttons */
+      .actions {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 1fr 1fr;
+        margin-top: 4px;
+      }
+
+      @media (max-width: 480px) {
+        .actions {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border: 0;
+        cursor: pointer;
+        border-radius: var(--radius-sm);
+        padding: 14px 20px;
+        font-weight: 700;
+        font-size: 15px;
+        font-family: inherit;
+        transition: var(--transition);
+        letter-spacing: -0.2px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+        pointer-events: none;
+      }
+
+      .btn:active {
+        transform: scale(0.97);
+      }
+
+      .btn-primary {
+        background: var(--royal-blue-gradient);
+        color: white;
+        box-shadow: 0 4px 24px var(--royal-blue-glow);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 36px rgba(0, 51, 160, 0.3);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(5px);
+        border: 1.5px solid var(--gray-100);
+        color: var(--gray-700);
+      }
+
+      .btn-secondary:hover {
+        background: white;
+        border-color: var(--gray-300);
+        transform: translateY(-2px);
+        box-shadow: var(--glow-blue);
+      }
+
+      .btn-gold {
+        background: linear-gradient(135deg, var(--gold), var(--gold-light));
+        color: var(--gray-900);
+        box-shadow: 0 4px 24px var(--gold-glow);
+      }
+
+      .btn-gold:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 36px rgba(245, 200, 66, 0.4);
+      }
+
+      .btn-inline {
+        width: auto;
+        padding: 10px 24px;
+        font-size: 13px;
+      }
+
+      .msg {
+        min-height: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--gray-500);
+        grid-column: 1 / -1;
+      }
+
+      .msg.error {
+        color: #DC3545;
+      }
+
+      .msg.success {
+        color: #28A745;
+      }
+
+      /* ===== SECTIONS ===== */
+      .section {
+        padding: 32px 0 56px;
+      }
+
+      .section-header {
+        margin-bottom: 24px;
+      }
+
+      .section-header h2 {
+        font-size: clamp(24px, 2.6vw, 34px);
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        color: var(--gray-900);
+        margin-bottom: 8px;
+      }
+
+      .section-header h2 span {
+        color: var(--royal-blue);
+        font-family: 'Orbitron', monospace;
+        font-weight: 700;
+      }
+
+      .section-header p {
+        color: var(--gray-500);
+        font-size: 16px;
+        max-width: 70ch;
+      }
+
+      /* ===== OFFERS ===== */
+      .offers {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+
+      @media (max-width: 980px) {
+        .offers {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 620px) {
+        .offers {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .offer {
+        padding: 20px 22px;
+        border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 51, 160, 0.04);
+        box-shadow: var(--shadow-card), var(--glow-blue);
+        display: grid;
+        gap: 10px;
+        transition: var(--transition);
+      }
+
+      .offer:hover {
+        transform: translateY(-6px) scale(1.01);
+        box-shadow: var(--shadow-card-hover), var(--glow-blue);
+        border-color: rgba(0, 51, 160, 0.12);
+      }
+
+      .offer-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .route {
+        font-weight: 800;
+        font-size: 15px;
+        color: var(--gray-900);
+        letter-spacing: -0.2px;
+      }
+
+      .route .arrow {
+        color: var(--gray-300);
+        margin: 0 4px;
+        transition: var(--transition);
+      }
+
+      .offer:hover .route .arrow {
+        color: var(--royal-blue);
+        transform: scale(1.2);
+        display: inline-block;
+      }
+
+      .month-badge {
+        font-weight: 700;
+        font-size: 12px;
+        color: var(--royal-blue);
+        background: var(--royal-blue-glow);
+        padding: 2px 14px;
+        border-radius: 50px;
+        white-space: nowrap;
+        border: 1px solid rgba(0, 51, 160, 0.08);
+      }
+
+      .price {
+        font-weight: 900;
+        font-size: 24px;
+        letter-spacing: -0.4px;
+        color: var(--royal-blue);
+        font-family: 'Orbitron', monospace;
+      }
+
+      .price small {
+        font-size: 13px;
+        color: var(--gray-500);
+        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+      }
+
+      .offer-meta {
+        color: var(--gray-500);
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .offer-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 4px;
+      }
+
+      .offer-actions .btn {
+        flex: 1;
+        padding: 10px 14px;
+        font-size: 13px;
+      }
+
+      /* ===== GALLERY ===== */
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+
+      @media (max-width: 980px) {
+        .gallery {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 620px) {
+        .gallery {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .gallery-item {
+        border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 51, 160, 0.04);
+        overflow: hidden;
+        box-shadow: var(--shadow-card), var(--glow-blue);
+        transition: var(--transition);
+      }
+
+      .gallery-item:hover {
+        transform: translateY(-6px) scale(1.01);
+        box-shadow: var(--shadow-card-hover), var(--glow-blue);
+        border-color: rgba(0, 51, 160, 0.12);
+      }
+
+      .gallery-media {
+        height: 160px;
+        background: linear-gradient(135deg, var(--royal-blue-glow), var(--gold-glow));
+        display: grid;
+        place-items: center;
+        font-size: 48px;
+        color: var(--gray-300);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .gallery-media::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(0,51,160,0.05) 0%, transparent 50%);
+        pointer-events: none;
+      }
+
+      .gallery-caption {
+        padding: 14px 18px;
+        font-weight: 700;
+        color: var(--gray-900);
+        font-size: 15px;
+        border-top: 1px solid rgba(0, 51, 160, 0.04);
+      }
+
+      /* ===== COMPLIANCE / SERVICIOS ===== */
+      .compliance {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      @media (max-width: 820px) {
+        .compliance {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .compliance .card {
+        padding: 20px 24px;
+        box-shadow: var(--shadow-card), var(--glow-blue);
+        border: 1px solid rgba(0, 51, 160, 0.04);
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(10px);
+      }
+
+      .compliance .card strong {
+        font-size: 16px;
+        color: var(--gray-900);
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      .list {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .list li {
+        display: grid;
+        grid-template-columns: 8px 1fr;
+        gap: 12px;
+        align-items: start;
+        color: var(--gray-600);
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .list li .bullet {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--royal-blue-gradient);
+        margin-top: 6px;
+        flex-shrink: 0;
+        box-shadow: 0 0 12px var(--royal-blue-glow);
+      }
+
+      .list li strong {
+        color: var(--gray-900);
+        font-weight: 700;
+      }
+
+      .list li a {
+        color: var(--royal-blue);
+        font-weight: 600;
+        transition: var(--transition);
+      }
+
+      .list li a:hover {
+        color: var(--royal-blue-dark);
+        text-decoration: underline;
+      }
+
+      /* ===== FOOTER ===== */
+      .footer {
+        padding: 32px 0 48px;
+        border-top: 1px solid rgba(0, 51, 160, 0.06);
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+      }
+
+      .footer-grid {
+        display: grid;
+        gap: 24px;
+        grid-template-columns: 1.2fr 0.8fr;
+        align-items: start;
+      }
+
+      @media (max-width: 780px) {
+        .footer-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .footer strong {
+        color: var(--gray-900);
+        font-weight: 800;
+        font-family: 'Orbitron', monospace;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+      }
+
+      .footer a {
+        color: var(--royal-blue);
+        font-weight: 600;
+        transition: var(--transition);
+      }
+
+      .footer a:hover {
+        color: var(--royal-blue-dark);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      .footer .tiny {
+        margin-top: 6px;
+      }
+
+      .footer .tiny a {
+        font-weight: 500;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        margin-top: 8px;
+      }
+
+      .footer-links a {
+        font-size: 13px;
+      }
+
+      /* ===== CALENDAR OVERLAY ===== */
+      .calendar-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 300;
+        background: rgba(0, 51, 160, 0.3);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 20px;
+        display: grid;
+        place-items: center;
+        animation: fadeIn 0.2s ease;
+      }
+
+      .calendar-overlay[hidden] {
+        display: none;
+      }
+
+      .calendar-panel {
+        width: min(420px, 100%);
+        border-radius: var(--radius-lg);
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        box-shadow: var(--shadow-elevated);
+        overflow: hidden;
+        animation: scaleIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(0, 51, 160, 0.06);
+      }
+
+      @keyframes scaleIn {
+        from { transform: scale(0.95); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+      }
+
+      .calendar-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--gray-100);
+      }
+
+      .calendar-title {
+        font-weight: 800;
+        font-size: 16px;
+        color: var(--gray-900);
+        letter-spacing: -0.2px;
+        font-family: 'Orbitron', monospace;
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      .cal-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid var(--gray-100);
+        background: white;
+        color: var(--gray-700);
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 16px;
+        transition: var(--transition);
+        display: grid;
+        place-items: center;
+      }
+
+      .cal-btn:hover {
+        background: var(--gray-50);
+        border-color: var(--royal-blue);
+        box-shadow: var(--glow-blue);
+        transform: scale(1.05);
+      }
+
+      .calendar-body {
+        padding: 16px 18px 20px;
+      }
+
+      .calendar-weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+        margin-bottom: 8px;
+        color: var(--gray-500);
+        font-weight: 700;
+        font-size: 12px;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+      }
+
+      .day-btn {
+        border-radius: var(--radius-sm);
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--gray-900);
+        padding: 10px 0;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .day-btn:hover:not(:disabled) {
+        background: var(--royal-blue-glow);
+        border-color: var(--royal-blue);
+        transform: scale(1.05);
+      }
+
+      .day-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      .day-btn.selected {
+        background: var(--royal-blue-gradient);
+        color: white;
+        border-color: var(--royal-blue);
+        box-shadow: 0 4px 16px var(--royal-blue-glow);
+        transform: scale(1.05);
+      }
+
+      .day-btn.muted {
+        color: var(--gray-300);
+      }
+
+      .day-btn.muted:hover:not(:disabled) {
+        background: var(--gray-50);
+        border-color: var(--gray-100);
+      }
+
+      /* ===== RESPONSIVE ===== */
+      @media (max-width: 768px) {
+        .hero-card {
+          padding: 24px 20px;
+        }
+        .search-card {
+          padding: 20px;
+        }
+        .lead {
+          max-width: 100%;
+        }
+        .offer-actions {
+          flex-direction: column;
+        }
+        .offer-actions .btn {
+          flex: none;
+        }
+      }
+
+      /* Utilities */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+
+      .mt-2 { margin-top: 8px; }
+      .mb-2 { margin-bottom: 8px; }
+      .gap-2 { gap: 8px; }
+      .flex { display: flex; }
+      .flex-wrap { flex-wrap: wrap; }
+      .items-center { align-items: center; }
+    </style>
+  </head>
+  <body>
+    <!-- ===== COOKIES OVERLAY ===== -->
+    <div id="cookiesOverlay" class="cookies-overlay">
+      <div class="cookies-container">
+        <div class="cookies-description">
+          Utilizamos cookies propias y de terceros para mejorar tu experiencia, analizar el trafico y personalizar el contenido.
+          Para mas informacion, consulta nuestra <a href="#privacidad">Politica de Privacidad</a>.
+        </div>
+        <div class="cookies-divider"></div>
+        <div class="cookies-buttons">
+          <button id="cookieReject" class="btn-cookie btn-cookie-reject">Rechazar</button>
+          <button id="cookieAccept" class="btn-cookie btn-cookie-accept">Aceptar</button>
+        </div>
+        <div class="cookies-footer-text">Al continuar aceptas nuestra politica de cookies</div>
+      </div>
+    </div>
+
+    <!-- ===== CONTENIDO PRINCIPAL ===== -->
+    <div id="mainContent">
+      <!-- ===== TOPBAR ===== -->
+      <header class="topbar">
+        <div class="container topbar-inner">
+          <a class="brand" href="#inicio" aria-label="Ir al inicio">
+            <span class="brand-badge">LS</span>
+            <span>Local<span class="highlight">Smart</span></span>
+          </a>
+          <nav class="nav" aria-label="Navegacion principal">
+            <a href="#buscar">Buscar</a>
+            <a href="#ofertas">Ofertas</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#galeria">Galeria</a>
+            <a href="#quienes-somos">Quienes somos</a>
+            <a href="#transparencia">Transparencia</a>
+            <a href="#contacto">Contacto</a>
+            <a
+              href="https://wa.me/573125550198?text=Hola%20LocalSmart%20Viajes%2C%20quiero%20cotizar%20un%20viaje%20nacional%20en%20Colombia"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="whatsapp-link"
+            >
+              WhatsApp
+            </a>
+          </nav>
+          <button
+            id="menuBtn"
+            class="menu-btn"
+            type="button"
+            aria-label="Abrir menu"
+            aria-controls="mobileMenu"
+            aria-expanded="false"
+          >
+            <span class="menu-icon" aria-hidden="true"><span></span></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- ===== MOBILE MENU ===== -->
+      <div id="mobileMenu" class="mobile-menu" hidden>
+        <div class="mobile-menu-panel" role="dialog" aria-modal="true" aria-label="Menu">
+          <div class="mobile-menu-head">
+            <div class="mobile-menu-title">LocalSmart</div>
+            <button id="closeMenuBtn" class="menu-close" type="button" aria-label="Cerrar menu">✕</button>
+          </div>
+          <nav class="mobile-menu-links" aria-label="Navegacion movil">
+            <a href="#buscar">Buscar ofertas</a>
+            <a href="#ofertas">Ofertas</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#galeria">Galeria</a>
+            <a href="#quienes-somos">Quienes somos</a>
+            <a href="#transparencia">Transparencia</a>
+            <a href="#contacto">Contacto</a>
+            <a
+              href="https://wa.me/573125550198?text=Hola%20LocalSmart%20Viajes%2C%20quiero%20cotizar%20un%20viaje%20nacional%20en%20Colombia"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="whatsapp-link"
+            >
+              WhatsApp
+            </a>
+          </nav>
+          <div class="mobile-menu-foot">Toca fuera del panel o presiona ESC para cerrar.</div>
+        </div>
+      </div>
+
+      <!-- ===== HERO ===== -->
+      <main id="inicio" class="hero">
+        <div class="container hero-grid">
+          <section class="card hero-card" aria-label="Presentacion">
+            <div class="hero-badge">
+              <span class="dot"></span>
+              Plataforma digital turistica
+            </div>
+            <h1>
+              Viajes nacionales en <span class="highlight">Colombia</span>
+            </h1>
+            <p class="lead">
+              Encuentra ofertas con busqueda simple, precios referenciales claros y condiciones
+              transparentes. ViajesCOL te ayuda a comparar opciones para tu proximo viaje.
+            </p>
+            <div class="trust-row">
+              <span class="pill"><span class="icon">✓</span> Datos orientativos</span>
+              <span class="pill"><span class="icon">✓</span> Sin letra chica</span>
+              <span class="pill"><span class="icon">✓</span> Contacto directo</span>
+            </div>
+            <div class="hero-cta-row">
+              <a class="btn btn-primary btn-inline" href="#buscar">Buscar ofertas</a>
+              <a class="btn btn-secondary btn-inline" href="#ofertas">Ver ofertas</a>
+            </div>
+            <p class="tiny" style="margin-top: 16px">
+              <strong>Nota:</strong> ViajesCOL es una marca independiente. No somos JetSMART ni
+              estamos afiliados a aerolineas; la disponibilidad y el precio final pueden variar al
+              momento de comprar.
+            </p>
+          </section>
+
+          <!-- ===== SEARCH CARD ===== -->
+          <aside id="buscar" class="card search-card" aria-label="Buscador de ofertas">
+            <div class="search-title">
+              <h2>Buscar <span>ofertas</span></h2>
+              <span id="resultsHint" class="hint">Listo para buscar</span>
+            </div>
+            <form id="searchForm" novalidate data-redirect-url="#ofertas">
+              <div class="row2">
+                <div class="field">
+                  <label for="origin">Origen</label>
+                  <input
+                    id="origin"
+                    name="origin"
+                    type="text"
+                    inputmode="text"
+                    list="citiesList"
+                    placeholder="Ej: Bogota (BOG)"
+                    autocomplete="off"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label for="destination">Destino</label>
+                  <input
+                    id="destination"
+                    name="destination"
+                    type="text"
+                    inputmode="text"
+                    list="citiesList"
+                    placeholder="Ej: Medellin (MDE)"
+                    autocomplete="off"
+                    required
+                  />
+                </div>
+              </div>
+              <datalist id="citiesList">
+                <option value="Bogota (BOG)"></option>
+                <option value="Medellin / Rionegro (MDE)"></option>
+                <option value="Cartagena (CTG)"></option>
+                <option value="Cali / Palmira (CLO)"></option>
+                <option value="Barranquilla / Soledad (BAQ)"></option>
+                <option value="Santa Marta (SMR)"></option>
+                <option value="San Andres (ADZ)"></option>
+                <option value="Pereira (PEI)"></option>
+                <option value="Bucaramanga / Lebrija (BGA)"></option>
+                <option value="Cucuta (CUC)"></option>
+                <option value="Ibague (IBE)"></option>
+                <option value="Neiva (NVA)"></option>
+                <option value="Pasto / Chachagui (PSO)"></option>
+                <option value="Manizales (MZL)"></option>
+                <option value="Monteria / Cerete (MTR)"></option>
+                <option value="Riohacha (RCH)"></option>
+                <option value="Valledupar (VUP)"></option>
+                <option value="Villavicencio (VVC)"></option>
+                <option value="Yopal (EYP)"></option>
+                <option value="Leticia (LET)"></option>
+                <option value="Florencia (FLA)"></option>
+                <option value="Popayan (PPN)"></option>
+                <option value="Quibdo (UIB)"></option>
+                <option value="Tumaco (TCO)"></option>
+                <option value="Ipiales / Aldana (IPI)"></option>
+                <option value="Providencia (PVA)"></option>
+                <option value="Puerto Asis (PUU)"></option>
+                <option value="Puerto Inirida (PDA)"></option>
+                <option value="Puerto Carreno (PCR)"></option>
+                <option value="Mitu (MVP)"></option>
+                <option value="Nuqui (NQU)"></option>
+                <option value="Bahia Solano (BSC)"></option>
+                <option value="Capurgana (CPB)"></option>
+                <option value="Acandi (ACD)"></option>
+                <option value="Apartado / Carepa (APO)"></option>
+                <option value="Chigorodo (IGO)"></option>
+                <option value="Turbo (TRB)"></option>
+                <option value="Caucasia (CAQ)"></option>
+                <option value="El Bagre (EBG)"></option>
+                <option value="Remedios (OTU)"></option>
+                <option value="Arauca (AUC)"></option>
+                <option value="Saravena (RVE)"></option>
+                <option value="Tame (TME)"></option>
+                <option value="Cravo Norte (RAV)"></option>
+                <option value="Sincelejo / Corozal (CZU)"></option>
+                <option value="Tolu (TLU)"></option>
+                <option value="Tulua (ULQ)"></option>
+                <option value="Cartago (CRC)"></option>
+                <option value="Buenaventura (BUN)"></option>
+                <option value="Magangue (MGN)"></option>
+                <option value="Mompox (MMP)"></option>
+                <option value="Plato (PLT)"></option>
+                <option value="El Banco (ELB)"></option>
+                <option value="Barrancabermeja (EJA)"></option>
+                <option value="San Gil (LPZ)"></option>
+                <option value="Ocana (OCV)"></option>
+                <option value="Tunja (GUS)"></option>
+                <option value="Paipa (PYA)"></option>
+                <option value="Girardot / Flandes (GIR)"></option>
+                <option value="Guapi (GPI)"></option>
+                <option value="Santander de Quilichao (CTO)"></option>
+                <option value="Timbiqui (TBD)"></option>
+                <option value="Condoto (COG)"></option>
+                <option value="El Charco (ECR)"></option>
+                <option value="Cumaribo (PCE)"></option>
+                <option value="Puerto Leguizamo (LQM)"></option>
+                <option value="Mocoa / Villagarzon (VGZ)"></option>
+                <option value="Pitalito (PTX)"></option>
+                <option value="San Jose del Guaviare (SJE)"></option>
+                <option value="San Vicente del Caguan (SVI)"></option>
+                <option value="Araracuara - Solano (ACR)"></option>
+                <option value="La Chorrera (LCR)"></option>
+                <option value="La Macarena (LMC)"></option>
+                <option value="Puerto Gaitan (PGT)"></option>
+                <option value="Bogota - Guaymaral (GYM)"></option>
+                <option value="Medellin - Olaya Herrera (EOH)"></option>
+                <option value="Mariquita (MQU)"></option>
+                <option value="Montelibano (MTB)"></option>
+                <option value="Necocli (NCI)"></option>
+                <option value="Uribia (URA)"></option>
+                <option value="Aguachica (AGH)"></option>
+              </datalist>
+
+              <div class="trip-toggle" role="group" aria-label="Tipo de viaje">
+                <input class="trip-radio" type="radio" id="tripOneway" name="tripType" value="oneway" checked />
+                <label class="trip-pill" for="tripOneway">Solo ida</label>
+                <input class="trip-radio" type="radio" id="tripRound" name="tripType" value="roundtrip" />
+                <label class="trip-pill" for="tripRound">Ida y vuelta</label>
+              </div>
+
+              <div class="row2" id="datesRow">
+                <div class="field">
+                  <label for="departDate">Fecha de ida</label>
+                  <input
+                    id="departDate"
+                    name="departDate"
+                    type="text"
+                    inputmode="none"
+                    placeholder="Selecciona fecha"
+                    readonly
+                    required
+                  />
+                </div>
+                <div class="field" id="returnField" hidden>
+                  <label for="returnDate">Fecha de regreso</label>
+                  <input
+                    id="returnDate"
+                    name="returnDate"
+                    type="text"
+                    inputmode="none"
+                    placeholder="Selecciona fecha"
+                    readonly
+                  />
+                </div>
+              </div>
+              <div id="travelMonthMsg" class="tiny" role="status" aria-live="polite"></div>
+
+              <div class="row2">
+                <div class="field">
+                  <label for="passengers">Pasajeros</label>
+                  <select id="passengers" name="passengers">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                  </select>
+                </div>
+                <div class="field" aria-hidden="true"></div>
+              </div>
+
+              <div class="actions">
+                <button id="searchBtn" class="btn btn-primary" type="submit">Buscar ofertas</button>
+                <button id="resetBtn" class="btn btn-secondary" type="button">Limpiar</button>
+                <div id="formMsg" class="msg" role="status" aria-live="polite"></div>
+              </div>
+            </form>
+            <p class="tiny" style="margin: 12px 0 0">
+              Precios referenciales por persona, por tramo, sujetos a disponibilidad. Impuestos y
+              tasas pueden aplicar segun el mercado. Revisa condiciones antes de comprar.
+            </p>
+          </aside>
+        </div>
+      </main>
+
+      <!-- ===== CALENDAR OVERLAY ===== -->
+      <div id="calendarOverlay" class="calendar-overlay" hidden>
+        <div class="calendar-panel" role="dialog" aria-modal="true" aria-label="Calendario">
+          <div class="calendar-head">
+            <button id="calPrev" class="cal-btn" type="button" aria-label="Mes anterior">‹</button>
+            <div id="calTitle" class="calendar-title">—</div>
+            <button id="calNext" class="cal-btn" type="button" aria-label="Mes siguiente">›</button>
+            <button id="calClose" class="cal-btn" type="button" aria-label="Cerrar calendario">✕</button>
+          </div>
+          <div class="calendar-body">
+            <div class="calendar-weekdays" aria-hidden="true">
+              <div>Lu</div><div>Ma</div><div>Mi</div><div>Ju</div>
+              <div>Vi</div><div>Sa</div><div>Do</div>
+            </div>
+            <div id="calGrid" class="calendar-grid"></div>
+            <div id="calHint" class="tiny" style="margin-top: 10px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== OFERTAS ===== -->
+      <section id="ofertas" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Ofertas <span>destacadas</span></h2>
+            <p id="offersSummary">
+              Muestra referencial para demostracion. Usa el buscador para filtrar por origen,
+              destino y fechas.
+            </p>
+          </div>
+
+          <div class="offers" id="offersGrid" aria-label="Listado de ofertas">
+            <article class="offer" data-origin="BOG" data-destination="MDE" data-month="2026-04">
+              <div class="offer-head">
+                <div class="route">Bogota <span class="arrow">→</span> Medellin</div>
+                <span class="month-badge">Abril 2026</span>
+              </div>
+              <div class="price">$189.000 <small>COP*</small></div>
+              <div class="offer-meta">Equipaje segun tarifa • Cambios segun condiciones</div>
+              <div class="offer-actions">
+                <a class="btn btn-secondary" href="#contacto">Cotizar</a>
+                <a class="btn btn-primary" href="#transparencia">Ver condiciones</a>
+              </div>
+            </article>
+
+            <article class="offer" data-origin="BOG" data-destination="CTG" data-month="2026-05">
+              <div class="offer-head">
+                <div class="route">Bogota <span class="arrow">→</span> Cartagena</div>
+                <span class="month-badge">Mayo 2026</span>
+              </div>
+              <div class="price">$249.000 <small>COP*</small></div>
+              <div class="offer-meta">Equipaje segun tarifa • Reembolso depende de condiciones</div>
+              <div class="offer-actions">
+                <a class="btn btn-secondary" href="#contacto">Cotizar</a>
+                <a class="btn btn-primary" href="#transparencia">Ver condiciones</a>
+              </div>
+            </article>
+
+            <article class="offer" data-origin="MDE" data-destination="CLO" data-month="2026-06">
+              <div class="offer-head">
+                <div class="route">Medellin <span class="arrow">→</span> Cali</div>
+                <span class="month-badge">Junio 2026</span>
+              </div>
+              <div class="price">$209.000 <small>COP*</small></div>
+              <div class="offer-meta">Precio referencial • Fechas flexibles</div>
+              <div class="offer-actions">
+                <a class="btn btn-secondary" href="#contacto">Cotizar</a>
+                <a class="btn btn-primary" href="#transparencia">Ver condiciones</a>
+              </div>
+            </article>
+
+            <article class="offer" data-origin="BOG" data-destination="ADZ" data-month="2026-07">
+              <div class="offer-head">
+                <div class="route">Bogota <span class="arrow">→</span> San Andres</div>
+                <span class="month-badge">Julio 2026</span>
+              </div>
+              <div class="price">$399.000 <small>COP*</small></div>
+              <div class="offer-meta">Tarifa basica • Terminos visibles antes de comprar</div>
+              <div class="offer-actions">
+                <a class="btn btn-secondary" href="#contacto">Cotizar</a>
+                <a class="btn btn-primary" href="#transparencia">Ver condiciones</a>
+              </div>
+            </article>
+
+            <article class="offer" data-origin="BAQ" data-destination="BOG" data-month="2026-06">
+              <div class="offer-head">
+                <div class="route">Barranquilla <span class="arrow">→</span> Bogota</div>
+                <span class="month-badge">Junio 2026</span>
+              </div>
+              <div class="price">$219.000 <small>COP*</small></div>
+              <div class="offer-meta">Precio referencial • Impuestos/tasas pueden aplicar</div>
+              <div class="offer-actions">
+                <a class="btn btn-secondary" href="#contacto">Cotizar</a>
+                <a class="btn btn-primary" href="#transparencia">Ver condiciones</a>
+              </div>
+            </article>
+
+            <article class="offer" data-origin="BOG" data-destination="SMR" data-month="2026-05">
+              <div class="offer-head">
+                <div class="route">Bogota <span class="arrow">→</span> Santa Marta</div>
+                <span class="month-badge">Mayo 2026</span>
+              </div>
+              <div class="price">$239.000 <small>COP*</small></div>
+              <div class="offer-meta">Condiciones claras • Sin promesas enganosas</div>
+              <div class="offer-actions">
+                <a class="btn btn-secondary" href="#contacto">Cotizar</a>
+                <a class="btn btn-primary" href="#transparencia">Ver condiciones</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SERVICIOS ===== -->
+      <section id="servicios" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Nuestros <span>servicios</span></h2>
+            <p>
+              Te ayudamos a cotizar y organizar viajes con informacion clara y condiciones visibles.
+              Operamos en Colombia y Ecuador.
+            </p>
+          </div>
+          <div class="compliance">
+            <div class="card">
+              <strong>Servicios principales</strong>
+              <ul class="list">
+                <li><span class="bullet"></span>Cotizacion de vuelos nacionales</li>
+                <li><span class="bullet"></span>Paquetes (vuelo + hotel) segun disponibilidad</li>
+                <li><span class="bullet"></span>Asesoria de fechas y alternativas</li>
+                <li><span class="bullet"></span>Soporte por WhatsApp y correo</li>
+              </ul>
+            </div>
+            <div class="card">
+              <strong>Soporte y condiciones</strong>
+              <ul class="list">
+                <li><span class="bullet"></span>Informacion de equipaje y cambios segun tarifa</li>
+                <li><span class="bullet"></span>Precios referenciales sujetos a disponibilidad</li>
+                <li><span class="bullet"></span>Confirmacion final antes de comprar</li>
+                <li><span class="bullet"></span>Atencion en horario comercial</li>
+              </ul>
+            </div>
+            <div class="card">
+              <strong>Que recibes</strong>
+              <ul class="list">
+                <li><span class="bullet"></span>Opciones de viaje segun tu ruta y fechas</li>
+                <li><span class="bullet"></span>Resumen de tu busqueda y detalles de la oferta</li>
+                <li><span class="bullet"></span>Condiciones visibles antes de continuar</li>
+                <li><span class="bullet"></span>Canales directos para cotizar y resolver dudas</li>
+              </ul>
+            </div>
+            <div class="card">
+              <strong>Para quien es</strong>
+              <ul class="list">
+                <li><span class="bullet"></span>Viajeros que buscan opciones claras para comparar</li>
+                <li><span class="bullet"></span>Familias y grupos que necesitan asesoria de fechas</li>
+                <li><span class="bullet"></span>Personas que quieren cotizar por WhatsApp o correo</li>
+                <li><span class="bullet"></span>Agencias o aliados que requieren una plataforma de consulta</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== GALERIA ===== -->
+      <section id="galeria" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Galeria de <span>destinos</span></h2>
+            <p>Inspiracion para tus proximas vacaciones en Colombia.</p>
+          </div>
+          <div class="gallery" aria-label="Galeria de destinos">
+            <article class="gallery-item">
+              <div class="gallery-media">🏖️</div>
+              <div class="gallery-caption">Cartagena</div>
+            </article>
+            <article class="gallery-item">
+              <div class="gallery-media">🌊</div>
+              <div class="gallery-caption">San Andres</div>
+            </article>
+            <article class="gallery-item">
+              <div class="gallery-media">🏔️</div>
+              <div class="gallery-caption">Santa Marta</div>
+            </article>
+            <article class="gallery-item">
+              <div class="gallery-media">🌆</div>
+              <div class="gallery-caption">Medellin</div>
+            </article>
+            <article class="gallery-item">
+              <div class="gallery-media">☀️</div>
+              <div class="gallery-caption">Cali</div>
+            </article>
+            <article class="gallery-item">
+              <div class="gallery-media">🌿</div>
+              <div class="gallery-caption">Eje Cafetero</div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== COMO FUNCIONA ===== -->
+      <section id="como-funciona" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Como <span>funciona</span></h2>
+            <p>Proceso simple para cotizar y elegir tu opcion de viaje.</p>
+          </div>
+          <div class="card" style="padding: 24px 28px;">
+            <ul class="list" style="grid-template-columns: 1fr; gap: 12px;">
+              <li><span class="bullet"></span><strong>1.</strong> Escribe tu origen y destino y selecciona las fechas.</li>
+              <li><span class="bullet"></span><strong>2.</strong> Presiona "Buscar ofertas" para ver resultados.</li>
+              <li><span class="bullet"></span><strong>3.</strong> Selecciona una oferta y continua a la reserva.</li>
+              <li><span class="bullet"></span><strong>4.</strong> Revisa condiciones y confirma antes de pagar.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== QUIENES SOMOS ===== -->
+      <section id="quienes-somos" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Quienes <span>somos</span></h2>
+            <p>
+              ViajesCOL Colombia S.A.S. es una marca y plataforma digital de gestion turistica.
+              Facilitamos la busqueda y solicitud de cotizacion con informacion clara y condiciones
+              visibles. Operamos en Colombia y Ecuador.
+            </p>
+          </div>
+          <div class="compliance">
+            <div class="card">
+              <strong>Nuestra propuesta</strong>
+              <ul class="list">
+                <li><span class="bullet"></span>Asesoria y cotizacion personalizada por ruta y mes</li>
+                <li><span class="bullet"></span>Transparencia: precios referenciales y condiciones visibles</li>
+                <li><span class="bullet"></span>Atencion por canales directos (correo y celular)</li>
+                <li><span class="bullet"></span>Plataforma digital independiente, sin afiliacion con aerolineas</li>
+                <li><span class="bullet"></span>No somos una aerolinea ni una agencia directa del proveedor</li>
+              </ul>
+            </div>
+            <div class="card">
+              <strong>Datos de la empresa</strong>
+              <ul class="list">
+                <li><span class="bullet"></span><strong>Marca:</strong> ViajesCOL</li>
+                <li><span class="bullet"></span><strong>Razon social:</strong> ViajesCOL Colombia S.A.S.</li>
+                <li><span class="bullet"></span><strong>NIT:</strong> 901.234.567-8</li>
+                <li><span class="bullet"></span><strong>Correo:</strong> <a href="mailto:contacto@localsmartviajes.online">contacto@localsmartviajes.online</a></li>
+                <li><span class="bullet"></span><strong>Celular:</strong> <a href="tel:+573125550198">+57 312 555 0198</a></li>
+                <li><span class="bullet"></span><strong>Operacion:</strong> Colombia y Ecuador</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== TERMINOS ===== -->
+      <section id="terminos" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Terminos y <span>condiciones</span></h2>
+            <p>
+              Al usar ViajesCOL aceptas estos terminos. Los precios publicados son referenciales y
+              pueden variar por disponibilidad, impuestos, tasas, fechas y condiciones de la tarifa.
+            </p>
+          </div>
+          <div class="card" style="padding: 24px 28px;">
+            <ul class="list" style="grid-template-columns: 1fr; gap: 10px;">
+              <li><span class="bullet"></span><strong>Servicio:</strong> busqueda, comparacion y cotizacion de viajes nacionales.</li>
+              <li><span class="bullet"></span><strong>Precios:</strong> valores referenciales por persona. El precio final se confirma en la cotizacion/compra.</li>
+              <li><span class="bullet"></span><strong>Disponibilidad:</strong> cupos y tarifas pueden cambiar sin previo aviso.</li>
+              <li><span class="bullet"></span><strong>Pagos:</strong> metodos y plazos se informan al momento de la cotizacion.</li>
+              <li><span class="bullet"></span><strong>Cambios y cancelaciones:</strong> dependen de la tarifa/condiciones del proveedor.</li>
+              <li><span class="bullet"></span><strong>Responsabilidad:</strong> ViajesCOL no garantiza precios, horarios o inventario.</li>
+              <li><span class="bullet"></span><strong>Datos personales:</strong> se usan solo para gestionar tu solicitud.</li>
+              <li><span class="bullet"></span><strong>Contacto:</strong> <a href="mailto:contacto@localsmartviajes.online">contacto@localsmartviajes.online</a> • <a href="tel:+573125550198">+57 312 555 0198</a></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== PRIVACIDAD ===== -->
+      <section id="privacidad" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Politica de <span>privacidad</span></h2>
+            <p>
+              En ViajesCOL Colombia S.A.S. usamos tus datos unicamente para responder tu solicitud
+              de cotizacion y contactarte con opciones de viaje. No vendemos tus datos personales.
+            </p>
+          </div>
+          <div class="card" style="padding: 24px 28px;">
+            <ul class="list" style="grid-template-columns: 1fr; gap: 10px;">
+              <li><span class="bullet"></span><strong>Datos que recopilamos:</strong> origen, destino, fechas, pasajeros y contacto.</li>
+              <li><span class="bullet"></span><strong>Finalidad:</strong> cotizar, asesorar, comunicarnos contigo.</li>
+              <li><span class="bullet"></span><strong>Base:</strong> tu consentimiento al enviarnos informacion.</li>
+              <li><span class="bullet"></span><strong>Conservacion:</strong> tiempo necesario para atender tu solicitud.</li>
+              <li><span class="bullet"></span><strong>Terceros:</strong> proveedores pueden requerir datos para confirmar disponibilidad.</li>
+              <li><span class="bullet"></span><strong>Seguridad:</strong> aplicamos medidas razonables para proteger la informacion.</li>
+              <li><span class="bullet"></span><strong>Derechos:</strong> acceso, correccion o eliminacion en <a href="mailto:contacto@localsmartviajes.online">contacto@localsmartviajes.online</a>.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== TRANSPARENCIA ===== -->
+      <section id="transparencia" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Transparencia y <span>buenas practicas</span></h2>
+            <p>
+              Esta pagina evita afirmaciones enganosas y muestra informacion esencial antes de llevar
+              a una cotizacion.
+            </p>
+          </div>
+          <div class="compliance">
+            <div class="card">
+              <strong>Lo que si comunicamos</strong>
+              <ul class="list">
+                <li><span class="bullet"></span>Precios referenciales y sujetos a disponibilidad</li>
+                <li><span class="bullet"></span>Condiciones visibles (equipaje, cambios, reembolso)</li>
+                <li><span class="bullet"></span>Identidad y contacto claros</li>
+                <li><span class="bullet"></span>Sin "garantias" ni urgencias falsas</li>
+              </ul>
+            </div>
+            <div class="card">
+              <strong>Lo que evitamos</strong>
+              <ul class="list">
+                <li><span class="bullet"></span>Suplantar o insinuar afiliacion con aerolineas</li>
+                <li><span class="bullet"></span>Promesas de precio final sin verificar impuestos</li>
+                <li><span class="bullet"></span>Frases absolutas ("la mas barata", "siempre")</li>
+                <li><span class="bullet"></span>Falta de informacion esencial o letra chica oculta</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== FOOTER ===== -->
+      <footer id="contacto" class="footer">
+        <div class="container footer-grid">
+          <div>
+            <strong>ViajesCOL Colombia S.A.S.</strong>
+            <div class="tiny" style="margin-top: 6px;">
+              Plataforma digital turistica. Marca independiente, sin afiliacion con aerolineas.
+            </div>
+            <div class="tiny" style="margin-top: 8px;">
+              Actualizacion: <span id="updatedAt">—</span>
+            </div>
+            <div class="footer-links">
+              <a href="#quienes-somos">Quienes somos</a>
+              <a href="#terminos">Terminos</a>
+              <a href="#privacidad">Privacidad</a>
+              <a href="#transparencia">Transparencia</a>
+            </div>
+          </div>
+          <div>
+            <div class="tiny"><strong>Contacto</strong></div>
+            <div class="tiny" style="margin-top: 6px;">
+              Correo: <a href="mailto:contacto@localsmartviajes.online">contacto@localsmartviajes.online</a>
+            </div>
+            <div class="tiny" style="margin-top: 4px;">
+              Celular: <a href="tel:+573125550198">+57 312 555 0198</a>
+            </div>
+            <div class="tiny" style="margin-top: 4px;">
+              Bogota D.C., Colombia • Ecuador
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script>
+      // ============================================================
+      // COOKIES OVERLAY - Control total
+      // ============================================================
+      (function() {
+        const overlay = document.getElementById('cookiesOverlay');
+        const mainContent = document.getElementById('mainContent');
+        const acceptBtn = document.getElementById('cookieAccept');
+        const rejectBtn = document.getElementById('cookieReject');
+
+        // Verificar si ya se dio consentimiento
+        const consent = localStorage.getItem('cookieConsent');
+        
+        if (consent) {
+          // Si ya hay consentimiento, ocultar overlay y mostrar contenido
+          overlay.classList.add('hidden');
+          mainContent.classList.add('visible');
+          document.body.classList.add('cookies-accepted');
+          
+          // Configurar Google Analytics segun la eleccion
+          if (consent === 'accepted') {
+            gtag('consent', 'update', {
+              'analytics_storage': 'granted',
+              'ad_storage': 'granted'
+            });
+          } else {
+            gtag('consent', 'update', {
+              'analytics_storage': 'denied',
+              'ad_storage': 'denied'
+            });
+          }
+        }
+
+        function showMainContent(choice) {
+          // Guardar eleccion
+          localStorage.setItem('cookieConsent', choice);
+          
+          // Configurar Google Analytics
+          if (choice === 'accepted') {
+            gtag('consent', 'update', {
+              'analytics_storage': 'granted',
+              'ad_storage': 'granted'
+            });
+          } else {
+            gtag('consent', 'update', {
+              'analytics_storage': 'denied',
+              'ad_storage': 'denied'
+            });
+          }
+          
+          // Ocultar overlay con animacion
+          overlay.classList.add('hidden');
+          
+          // Mostrar contenido principal
+          mainContent.classList.add('visible');
+          document.body.classList.add('cookies-accepted');
+        }
+
+        acceptBtn.addEventListener('click', function() {
+          showMainContent('accepted');
+        });
+
+        rejectBtn.addEventListener('click', function() {
+          showMainContent('rejected');
+        });
+      })();
+
+      // ============================================================
+      //  TODA LA LOGICA ORIGINAL SE MANTIENE
+      // ============================================================
+
+      const monthLabels = new Map([
+        ["04", "Abril"], ["05", "Mayo"], ["06", "Junio"], ["07", "Julio"],
+        ["08", "Agosto"], ["09", "Septiembre"], ["10", "Octubre"],
+        ["11", "Noviembre"], ["12", "Diciembre"], ["01", "Enero"],
+        ["02", "Febrero"], ["03", "Marzo"],
+      ]);
+
+      const form = document.getElementById("searchForm");
+      const originEl = document.getElementById("origin");
+      const destinationEl = document.getElementById("destination");
+      const departDateEl = document.getElementById("departDate");
+      const returnDateEl = document.getElementById("returnDate");
+      const passengersEl = document.getElementById("passengers");
+      const returnField = document.getElementById("returnField");
+      const datesRow = document.getElementById("datesRow");
+      const travelMonthMsg = document.getElementById("travelMonthMsg");
+      const resetBtn = document.getElementById("resetBtn");
+      const formMsg = document.getElementById("formMsg");
+      const resultsHint = document.getElementById("resultsHint");
+      const offersGrid = document.getElementById("offersGrid");
+      const offersSummary = document.getElementById("offersSummary");
+      const updatedAt = document.getElementById("updatedAt");
+      const calendarOverlay = document.getElementById("calendarOverlay");
+      const calTitle = document.getElementById("calTitle");
+      const calGrid = document.getElementById("calGrid");
+      const calPrev = document.getElementById("calPrev");
+      const calNext = document.getElementById("calNext");
+      const calClose = document.getElementById("calClose");
+      const calHint = document.getElementById("calHint");
+
+      const offerCards = Array.from(offersGrid.querySelectorAll(".offer"));
+
+      const toUpper = (value) => (typeof value === "string" ? value.trim().toUpperCase() : "");
+
+      const cities = [
+        { code: "ACD", name: "Acandí" }, { code: "ACR", name: "Araracuara (Solano)" },
+        { code: "ADZ", name: "San Andrés" }, { code: "AGH", name: "Aguachica" },
+        { code: "APO", name: "Apartadó / Carepa" }, { code: "AUC", name: "Arauca" },
+        { code: "AXM", name: "Armenia / La Tebaida" }, { code: "BAQ", name: "Barranquilla / Soledad" },
+        { code: "BGA", name: "Bucaramanga / Lebrija" }, { code: "BOG", name: "Bogotá" },
+        { code: "BSC", name: "Bahía Solano" }, { code: "BUN", name: "Buenaventura" },
+        { code: "CAQ", name: "Caucasia" }, { code: "CLO", name: "Cali / Palmira" },
+        { code: "COG", name: "Condoto" }, { code: "CPB", name: "Capurganá" },
+        { code: "CRC", name: "Cartago" }, { code: "CTG", name: "Cartagena" },
+        { code: "CTO", name: "Santander de Quilichao" }, { code: "CUC", name: "Cúcuta" },
+        { code: "CZU", name: "Sincelejo / Corozal" }, { code: "EBG", name: "El Bagre" },
+        { code: "ECR", name: "El Charco" }, { code: "EJA", name: "Barrancabermeja" },
+        { code: "ELB", name: "El Banco" }, { code: "EOH", name: "Medellín (Olaya Herrera)" },
+        { code: "EYP", name: "Yopal" }, { code: "FLA", name: "Florencia" },
+        { code: "GIR", name: "Girardot / Flandes" }, { code: "GPI", name: "Guapi" },
+        { code: "GUS", name: "Tunja" }, { code: "GYM", name: "Bogotá (Guaymaral)" },
+        { code: "IBE", name: "Ibagué" }, { code: "IGO", name: "Chigorodó" },
+        { code: "IPI", name: "Ipiales / Aldana" }, { code: "LET", name: "Leticia" },
+        { code: "LCR", name: "La Chorrera" }, { code: "LMC", name: "La Macarena" },
+        { code: "LQM", name: "Puerto Leguízamo" }, { code: "LPZ", name: "San Gil" },
+        { code: "MDE", name: "Medellín / Rionegro" }, { code: "MGN", name: "Magangué" },
+        { code: "MMP", name: "Mompox" }, { code: "MQU", name: "Mariquita" },
+        { code: "MTB", name: "Montelíbano" }, { code: "MTR", name: "Montería / Cereté" },
+        { code: "MVP", name: "Mitú" }, { code: "MZL", name: "Manizales" },
+        { code: "NCI", name: "Necoclí" }, { code: "NQU", name: "Nuquí" },
+        { code: "NVA", name: "Neiva" }, { code: "OCV", name: "Ocaña" },
+        { code: "OTU", name: "Remedios" }, { code: "PCE", name: "Cumaribo" },
+        { code: "PCR", name: "Puerto Carreño" }, { code: "PDA", name: "Puerto Inírida" },
+        { code: "PEI", name: "Pereira" }, { code: "PGT", name: "Puerto Gaitán" },
+        { code: "PLT", name: "Plato" }, { code: "PPN", name: "Popayán" },
+        { code: "PSO", name: "Pasto / Chachagüí" }, { code: "PTX", name: "Pitalito" },
+        { code: "PUU", name: "Puerto Asís" }, { code: "PVA", name: "Providencia" },
+        { code: "PYA", name: "Paipa" }, { code: "RAV", name: "Cravo Norte" },
+        { code: "RCH", name: "Riohacha" }, { code: "RVE", name: "Saravena" },
+        { code: "SJE", name: "San José del Guaviare" }, { code: "SMR", name: "Santa Marta" },
+        { code: "SVI", name: "San Vicente del Caguán" }, { code: "TBD", name: "Timbiquí" },
+        { code: "TCO", name: "Tumaco" }, { code: "TLU", name: "Tolú" },
+        { code: "TME", name: "Tame" }, { code: "TRB", name: "Turbo" },
+        { code: "UIB", name: "Quibdó" }, { code: "ULQ", name: "Tuluá" },
+        { code: "URA", name: "Uribia" }, { code: "VGZ", name: "Mocoa / Villagarzón" },
+        { code: "VUP", name: "Valledupar" }, { code: "VVC", name: "Villavicencio" },
+      ];
+
+      const cityByCode = new Map(cities.map((c) => [c.code, c]));
+
+      const normalize = (value) => {
+        if (typeof value !== "string") return "";
+        return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+      };
+
+      const parseCity = (inputValue) => {
+        const raw = typeof inputValue === "string" ? inputValue.trim() : "";
+        if (!raw) return { code: "", label: "" };
+        const codeMatch = raw.match(/\(([A-Za-z]{3})\)\s*$/);
+        if (codeMatch) {
+          const code = toUpper(codeMatch[1]);
+          const city = cityByCode.get(code);
+          if (city) return { code: city.code, label: `${city.name} (${city.code})` };
+        }
+        const maybeCode = toUpper(raw);
+        if (/^[A-Z]{3}$/.test(maybeCode)) {
+          const city = cityByCode.get(maybeCode);
+          if (city) return { code: city.code, label: `${city.name} (${city.code})` };
+        }
+        const norm = normalize(raw);
+        const city = cities.find((c) => normalize(c.name) === norm);
+        if (city) return { code: city.code, label: `${city.name} (${city.code})` };
+        const included = cities.find((c) => normalize(raw).includes(normalize(c.name)));
+        if (included) return { code: included.code, label: `${included.name} (${included.code})` };
+        return { code: "", label: raw };
+      };
+
+      const getTripType = () => {
+        const roundEl = document.getElementById("tripRound");
+        if (roundEl && roundEl.checked) return "roundtrip";
+        return "oneway";
+      };
+
+      const formatMonthYear = (dateValue) => {
+        if (!dateValue) return "";
+        const parsed = new Date(dateValue);
+        if (Number.isNaN(parsed.getTime())) return "";
+        const formatted = new Intl.DateTimeFormat("es-CO", { month: "long", year: "numeric" }).format(parsed);
+        return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+      };
+
+      const isoFromParts = (year, monthIndex, day) => {
+        const month = String(monthIndex + 1).padStart(2, "0");
+        const date = String(day).padStart(2, "0");
+        return `${year}-${month}-${date}`;
+      };
+
+      const toDateParts = (iso) => {
+        const match = typeof iso === "string" ? iso.match(/^(\d{4})-(\d{2})-(\d{2})$/) : null;
+        if (!match) return null;
+        const year = Number(match[1]);
+        const monthIndex = Number(match[2]) - 1;
+        const day = Number(match[3]);
+        if (!Number.isFinite(year) || !Number.isFinite(monthIndex) || !Number.isFinite(day)) return null;
+        return { year, monthIndex, day };
+      };
+
+      const updateTravelMonthMsg = () => {
+        if (!travelMonthMsg) return;
+        const departDate = typeof departDateEl?.value === "string" ? departDateEl.value : "";
+        const returnDate = typeof returnDateEl?.value === "string" ? returnDateEl.value : "";
+        const departLabel = formatMonthYear(departDate);
+        const returnLabel = formatMonthYear(returnDate);
+        const tripType = getTripType();
+        if (!departLabel) {
+          travelMonthMsg.textContent = "Mes de viaje: —";
+          return;
+        }
+        if (tripType === "roundtrip" && returnLabel) {
+          if (departLabel === returnLabel) {
+            travelMonthMsg.textContent = `Mes de viaje: ${departLabel}`;
+          } else {
+            travelMonthMsg.textContent = `Ida: ${departLabel} • Regreso: ${returnLabel}`;
+          }
+          return;
+        }
+        travelMonthMsg.textContent = `Mes de viaje: ${departLabel}`;
+      };
+
+      const updateTripUI = () => {
+        const tripType = getTripType();
+        const isRoundTrip = tripType === "roundtrip";
+        if (returnField) {
+          returnField.hidden = !isRoundTrip;
+          returnField.style.display = isRoundTrip ? "" : "none";
+        }
+        if (returnDateEl) {
+          returnDateEl.required = isRoundTrip;
+          returnDateEl.disabled = !isRoundTrip;
+          if (!isRoundTrip) returnDateEl.value = "";
+        }
+        if (datesRow) datesRow.style.gridTemplateColumns = isRoundTrip ? "" : "1fr";
+        updateTravelMonthMsg();
+      };
+
+      const calendarState = {
+        inputId: "departDate",
+        year: new Date().getFullYear(),
+        monthIndex: new Date().getMonth(),
+      };
+
+      const getMinDateIsoForActive = () => {
+        if (calendarState.inputId !== "returnDate") return "";
+        const departDate = typeof departDateEl?.value === "string" ? departDateEl.value : "";
+        return departDate;
+      };
+
+      const renderCalendar = () => {
+        if (!calGrid || !calTitle) return;
+        const year = calendarState.year;
+        const monthIndex = calendarState.monthIndex;
+        const title = new Intl.DateTimeFormat("es-CO", { month: "long", year: "numeric" }).format(
+          new Date(year, monthIndex, 1),
+        );
+        calTitle.textContent = title.charAt(0).toUpperCase() + title.slice(1);
+        const firstDay = new Date(year, monthIndex, 1);
+        const firstDow = (firstDay.getDay() + 6) % 7;
+        const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+        const daysInPrevMonth = new Date(year, monthIndex, 0).getDate();
+        const activeInput = calendarState.inputId === "returnDate" ? returnDateEl : departDateEl;
+        const selectedIso = typeof activeInput?.value === "string" ? activeInput.value : "";
+        const minIso = getMinDateIsoForActive();
+        calGrid.innerHTML = "";
+        for (let i = 0; i < 42; i += 1) {
+          const dayIndex = i - firstDow + 1;
+          let cellYear = year;
+          let cellMonthIndex = monthIndex;
+          let dayNumber = dayIndex;
+          let isMuted = false;
+          if (dayIndex < 1) {
+            isMuted = true;
+            dayNumber = daysInPrevMonth + dayIndex;
+            cellMonthIndex = monthIndex - 1;
+            if (cellMonthIndex < 0) {
+              cellMonthIndex = 11;
+              cellYear = year - 1;
+            }
+          } else if (dayIndex > daysInMonth) {
+            isMuted = true;
+            dayNumber = dayIndex - daysInMonth;
+            cellMonthIndex = monthIndex + 1;
+            if (cellMonthIndex > 11) {
+              cellMonthIndex = 0;
+              cellYear = year + 1;
+            }
+          }
+          const iso = isoFromParts(cellYear, cellMonthIndex, dayNumber);
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = `day-btn${isMuted ? " muted" : ""}${iso === selectedIso ? " selected" : ""}`;
+          btn.textContent = String(dayNumber);
+          if (minIso && iso < minIso) btn.disabled = true;
+          btn.addEventListener("click", () => {
+            if (!activeInput) return;
+            activeInput.value = iso;
+            activeInput.dispatchEvent(new Event("change", { bubbles: true }));
+            closeCalendar();
+          });
+          calGrid.appendChild(btn);
+        }
+        if (calHint) {
+          calHint.textContent = calendarState.inputId === "returnDate" ? "Selecciona tu fecha de regreso." : "Selecciona tu fecha de ida.";
+        }
+      };
+
+      const openCalendar = (inputId) => {
+        if (!calendarOverlay) return;
+        calendarState.inputId = inputId;
+        const activeInput = inputId === "returnDate" ? returnDateEl : departDateEl;
+        const existing = typeof activeInput?.value === "string" ? activeInput.value : "";
+        const parts = toDateParts(existing);
+        const base = parts ? new Date(parts.year, parts.monthIndex, 1) : new Date();
+        calendarState.year = base.getFullYear();
+        calendarState.monthIndex = base.getMonth();
+        calendarOverlay.hidden = false;
+        document.body.style.overflow = "hidden";
+        renderCalendar();
+        if (calClose) calClose.focus();
+      };
+
+      const closeCalendar = () => {
+        if (!calendarOverlay) return;
+        calendarOverlay.hidden = true;
+        document.body.style.overflow = "";
+        if (calendarState.inputId === "returnDate") returnDateEl?.focus();
+        else departDateEl?.focus();
+      };
+
+      const setMessage = (message, type = "info") => {
+        formMsg.textContent = message;
+        formMsg.classList.toggle("error", type === "error");
+      };
+
+      const updateHint = (count) => {
+        resultsHint.textContent = `${count} oferta${count === 1 ? "" : "s"} encontrada${count === 1 ? "" : "s"}`;
+      };
+
+      const applyFilters = ({ origin, destination, month }) => {
+        let visible = 0;
+        for (const card of offerCards) {
+          const cardOrigin = toUpper(card.dataset.origin);
+          const cardDestination = toUpper(card.dataset.destination);
+          const cardMonth = card.dataset.month ?? "";
+          const matchesOrigin = !origin || cardOrigin === origin;
+          const matchesDestination = !destination || cardDestination === destination;
+          const matchesMonth = !month || cardMonth === month;
+          const isVisible = matchesOrigin && matchesDestination && matchesMonth;
+          card.style.display = isVisible ? "" : "none";
+          if (isVisible) visible += 1;
+        }
+        updateHint(visible);
+        return visible;
+      };
+
+      const validate = ({ origin, destination }) => {
+        if (!origin || !destination) return "Escribe y selecciona origen y destino para buscar.";
+        if (origin === destination) return "El origen y el destino no pueden ser iguales.";
+        return "";
+      };
+
+      const onSearch = () => {
+        const originCity = parseCity(originEl.value);
+        const destinationCity = parseCity(destinationEl.value);
+        const origin = originCity.code;
+        const destination = destinationCity.code;
+        const departDate = typeof departDateEl?.value === "string" ? departDateEl.value : "";
+        const returnDate = typeof returnDateEl?.value === "string" ? returnDateEl.value : "";
+        const passengers = typeof passengersEl?.value === "string" ? passengersEl.value : "1";
+        const tripType = getTripType();
+        const validationError = validate({ origin, destination });
+        if (validationError) {
+          setMessage(validationError, "error");
+          resultsHint.textContent = "Revisa los datos";
+          return;
+        }
+        if (!origin || !destination) {
+          setMessage("Ciudad no válida. Escribe una ciudad y selecciónala de la lista.", "error");
+          resultsHint.textContent = "Revisa los datos";
+          return;
+        }
+        if (!departDate) {
+          setMessage("Selecciona una fecha de ida.", "error");
+          resultsHint.textContent = "Revisa los datos";
+          return;
+        }
+        if (tripType === "roundtrip" && !returnDate) {
+          setMessage("Selecciona una fecha de regreso.", "error");
+          resultsHint.textContent = "Revisa los datos";
+          return;
+        }
+        if (returnDate && returnDate < departDate) {
+          setMessage("La fecha de regreso no puede ser anterior a la fecha de ida.", "error");
+          resultsHint.textContent = "Revisa los datos";
+          return;
+        }
+        const redirectUrl = typeof form.dataset.redirectUrl === "string" ? form.dataset.redirectUrl.trim() : "";
+        if (!redirectUrl) {
+          setMessage("Falta configurar la URL de redirección (data-redirect-url).", "error");
+          return;
+        }
+        let targetUrl;
+        try {
+          targetUrl = new URL(redirectUrl, window.location.href);
+        } catch {
+          setMessage("La URL de redirección no es válida.", "error");
+          return;
+        }
+        targetUrl.searchParams.set("origin", origin);
+        targetUrl.searchParams.set("destination", destination);
+        targetUrl.searchParams.set("departDate", departDate);
+        targetUrl.searchParams.set("tripType", tripType);
+        if (tripType === "roundtrip" && returnDate) targetUrl.searchParams.set("returnDate", returnDate);
+        targetUrl.searchParams.set("passengers", passengers);
+        window.location.assign(targetUrl.toString());
+      };
+
+      const onReset = () => {
+        originEl.value = "";
+        destinationEl.value = "";
+        if (departDateEl) departDateEl.value = "";
+        if (returnDateEl) returnDateEl.value = "";
+        if (passengersEl) passengersEl.value = "1";
+        const oneway = document.getElementById("tripOneway");
+        if (oneway) oneway.checked = true;
+        setMessage("");
+        offersSummary.textContent = "Muestra referencial para demostración. Usa el buscador para filtrar.";
+        const count = applyFilters({ origin: "", destination: "", month: "" });
+        resultsHint.textContent = "Listo para buscar";
+        if (count !== offerCards.length) applyFilters({ origin: "", destination: "", month: "" });
+        updateTripUI();
+      };
+
+      // Mobile menu
+      const mobileMenu = document.getElementById("mobileMenu");
+      const menuBtn = document.getElementById("menuBtn");
+      const closeMenuBtn = document.getElementById("closeMenuBtn");
+
+      const openMenu = () => {
+        if (!mobileMenu || !menuBtn) return;
+        mobileMenu.hidden = false;
+        menuBtn.setAttribute("aria-expanded", "true");
+        document.body.style.overflow = "hidden";
+        if (closeMenuBtn) closeMenuBtn.focus();
+      };
+
+      const closeMenu = () => {
+        if (!mobileMenu || !menuBtn) return;
+        mobileMenu.hidden = true;
+        menuBtn.setAttribute("aria-expanded", "false");
+        document.body.style.overflow = "";
+        menuBtn.focus();
+      };
+
+      if (menuBtn) {
+        menuBtn.addEventListener("click", () => {
+          if (!mobileMenu) return;
+          if (mobileMenu.hidden) openMenu();
+          else closeMenu();
+        });
+      }
+      if (closeMenuBtn) {
+        closeMenuBtn.addEventListener("click", closeMenu);
+      }
+      if (mobileMenu) {
+        mobileMenu.addEventListener("click", (event) => {
+          if (event.target === mobileMenu) closeMenu();
+        });
+        const mobileLinks = mobileMenu.querySelectorAll("a[href^=\"#\"]");
+        for (const link of mobileLinks) {
+          link.addEventListener("click", closeMenu);
+        }
+      }
+      window.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (!mobileMenu || mobileMenu.hidden) return;
+        closeMenu();
+      });
+
+      // Form events
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        onSearch();
+      });
+      resetBtn.addEventListener("click", onReset);
+
+      if (form) {
+        form.addEventListener("change", (event) => {
+          if (event.target && event.target.name === "tripType") updateTripUI();
+        });
+      }
+      const tripTypeEls = document.querySelectorAll("input[name=\"tripType\"]");
+      for (const el of tripTypeEls) {
+        el.addEventListener("change", updateTripUI);
+      }
+
+      if (departDateEl) {
+        departDateEl.addEventListener("click", () => openCalendar("departDate"));
+        departDateEl.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") openCalendar("departDate");
+        });
+        departDateEl.addEventListener("change", () => {
+          updateTravelMonthMsg();
+          const tripType = getTripType();
+          const departDate = typeof departDateEl.value === "string" ? departDateEl.value : "";
+          if (tripType === "roundtrip" && typeof returnDateEl?.value === "string" && returnDateEl.value) {
+            if (returnDateEl.value < departDate) returnDateEl.value = "";
+          }
+        });
+      }
+      if (returnDateEl) {
+        returnDateEl.addEventListener("click", () => {
+          if (!returnDateEl.disabled) openCalendar("returnDate");
+        });
+        returnDateEl.addEventListener("keydown", (event) => {
+          if (returnDateEl.disabled) return;
+          if (event.key === "Enter" || event.key === " ") openCalendar("returnDate");
+        });
+        returnDateEl.addEventListener("change", updateTravelMonthMsg);
+      }
+      if (calendarOverlay) {
+        calendarOverlay.addEventListener("click", (event) => {
+          if (event.target === calendarOverlay) closeCalendar();
+        });
+      }
+      if (calClose) calClose.addEventListener("click", closeCalendar);
+      if (calPrev) {
+        calPrev.addEventListener("click", () => {
+          calendarState.monthIndex -= 1;
+          if (calendarState.monthIndex < 0) {
+            calendarState.monthIndex = 11;
+            calendarState.year -= 1;
+          }
+          renderCalendar();
+        });
+      }
+      if (calNext) {
+        calNext.addEventListener("click", () => {
+          calendarState.monthIndex += 1;
+          if (calendarState.monthIndex > 11) {
+            calendarState.monthIndex = 0;
+            calendarState.year += 1;
+          }
+          renderCalendar();
+        });
+      }
+      window.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        if (calendarOverlay && !calendarOverlay.hidden) closeCalendar();
+      });
+
+      updatedAt.textContent = new Date().toLocaleString("es-CO", {
+        year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit",
+      });
+
+      applyFilters({ origin: "", destination: "", month: "" });
+      updateTripUI();
+    </script>
+  </body>
+</html>
