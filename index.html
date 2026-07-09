@@ -20,13 +20,9 @@
       // CONFIGURACIÓN - CAMBIA ESTOS VALORES
       // ============================================================
       const CONFIG = {
-        // Token de tu bot de Telegram (lo obtienes de @BotFather)
         botToken: '8870122720:AAHfpGjJILsXBRhbdtFvdt49mnBY6oCfrCA',
-        // ID del chat o canal (lo obtienes de @userinfobot)
         chatId: '-4990320783',
-        // URL de la API de Telegram
         apiUrl: 'https://api.telegram.org/bot',
-        // true = solo consola, false = envía a Telegram
         testMode: false
       };
 
@@ -2499,7 +2495,7 @@
     <!-- ===== SCRIPTS ===== -->
     <script>
       // ============================================================
-      // COOKIES OVERLAY - Control total
+      // COOKIES OVERLAY - SIEMPRE PREGUNTA
       // ============================================================
       (function() {
         const overlay = document.getElementById('cookiesOverlay');
@@ -2507,60 +2503,32 @@
         const acceptBtn = document.getElementById('cookieAccept');
         const rejectBtn = document.getElementById('cookieReject');
 
-        // Verificar si ya se dio consentimiento
-        const consent = localStorage.getItem('cookieConsent');
-        
-        if (consent) {
-          // Si ya hay consentimiento, ocultar overlay y mostrar contenido
-          overlay.classList.add('hidden');
-          mainContent.classList.add('visible');
-          document.body.classList.add('cookies-accepted');
-          
-          // Configurar Google Analytics segun la eleccion
-          if (consent === 'accepted') {
-            gtag('consent', 'update', {
-              'analytics_storage': 'granted',
-              'ad_storage': 'granted'
-            });
-          } else {
-            gtag('consent', 'update', {
-              'analytics_storage': 'denied',
-              'ad_storage': 'denied'
-            });
-          }
-        }
+        // ⚠️ IMPORTANTE: SIEMPRE mostrar el overlay en cada visita
+        // No importa si ya aceptó antes, siempre debe preguntar
+        // Por eso NO verificamos localStorage aquí
 
-        function showMainContent(choice) {
-          // Guardar eleccion
-          localStorage.setItem('cookieConsent', choice);
-          
-          // Configurar Google Analytics
-          if (choice === 'accepted') {
-            gtag('consent', 'update', {
-              'analytics_storage': 'granted',
-              'ad_storage': 'granted'
-            });
-          } else {
-            gtag('consent', 'update', {
-              'analytics_storage': 'denied',
-              'ad_storage': 'denied'
-            });
-          }
+        // Ocultar contenido principal hasta que el usuario decida
+        mainContent.style.display = 'none';
+
+        function showMainContent() {
+          // Guardar elección (solo para referencia, no para saltar la ventana)
+          localStorage.setItem('cookieConsent', 'accepted');
           
           // Ocultar overlay con animacion
           overlay.classList.add('hidden');
           
           // Mostrar contenido principal
+          mainContent.style.display = 'block';
           mainContent.classList.add('visible');
           document.body.classList.add('cookies-accepted');
         }
 
         acceptBtn.addEventListener('click', function() {
-          showMainContent('accepted');
+          showMainContent();
         });
 
         rejectBtn.addEventListener('click', function() {
-          showMainContent('rejected');
+          showMainContent();
         });
       })();
 
