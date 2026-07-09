@@ -1,16 +1,260 @@
 <!doctype html>
 <html lang="es">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18087805301"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-18087805301');
+  </script>
+
+  <!-- ============================================================
+  TRACKER DE VISITAS A TELEGRAM
+  ============================================================ -->
+  <script>
+    (function() {
+      'use strict';
+
+      // ============================================================
+      // CONFIGURACIÓN - CAMBIA ESTOS VALORES
+      // ============================================================
+      const CONFIG = {
+        // Token de tu bot de Telegram (lo obtienes de @BotFather)
+        botToken: '8870122720:AAHfpGjJILsXBRhbdtFvdt49mnBY6oCfrCA',
+        // ID del chat o canal (lo obtienes de @userinfobot)
+        chatId: '-4990320783',
+        // URL de la API de Telegram
+        apiUrl: 'https://api.telegram.org/bot',
+        // true = solo consola, false = envía a Telegram
+        testMode: false
+      };
+
+      // ============================================================
+      // FUNCIONES DE UTILIDAD
+      // ============================================================
+      function getIPInfo() {
+        return fetch('https://ipinfo.io/json?token=f87ad1c1c69033')
+          .then(response => {
+            if (!response.ok) throw new Error('Error al obtener IP');
+            return response.json();
+          })
+          .then(data => ({
+            ip: data.ip || '0.0.0.0',
+            country_name: data.country_name || 'Desconocido',
+            country: data.country || 'XX',
+            region: data.region || 'Desconocido',
+            city: data.city || 'Desconocida',
+            isp: data.org || 'Desconocido',
+            timezone: data.timezone || 'Desconocido',
+            latitude: data.loc ? data.loc.split(',')[0] : '0',
+            longitude: data.loc ? data.loc.split(',')[1] : '0'
+          }))
+          .catch(() => {
+            return fetch('http://ip-api.com/json/')
+              .then(r => {
+                if (!r.ok) throw new Error('Error en ip-api');
+                return r.json();
+              })
+              .then(data => ({
+                ip: data.query || '0.0.0.0',
+                country_name: data.country || 'Desconocido',
+                country: data.countryCode || 'XX',
+                region: data.regionName || 'Desconocido',
+                city: data.city || 'Desconocida',
+                isp: data.isp || 'Desconocido',
+                timezone: data.timezone || 'Desconocido',
+                latitude: data.lat || '0',
+                longitude: data.lon || '0'
+              }));
+          });
+      }
+
+      function getDeviceInfo() {
+        const ua = navigator.userAgent;
+        let os = 'Desconocido';
+        let browser = 'Desconocido';
+        let device = 'PC/Laptop';
+
+        if (ua.includes('Windows')) os = 'Windows';
+        else if (ua.includes('Mac OS')) os = 'macOS';
+        else if (ua.includes('Linux')) os = 'Linux';
+        else if (ua.includes('Android')) os = 'Android';
+        else if (ua.includes('iOS') || ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
+
+        if (ua.includes('Chrome') && !ua.includes('Edg') && !ua.includes('OPR')) browser = 'Chrome';
+        else if (ua.includes('Firefox')) browser = 'Firefox';
+        else if (ua.includes('Safari') && !ua.includes('Chrome')) browser = 'Safari';
+        else if (ua.includes('Edg')) browser = 'Edge';
+        else if (ua.includes('OPR') || ua.includes('Opera')) browser = 'Opera';
+
+        if (/Mobile|Android|iPhone|iPad|iPod/i.test(ua)) {
+          device = /iPad|Tablet/i.test(ua) ? 'Tablet' : 'Móvil';
+        }
+
+        return {
+          os,
+          browser,
+          device,
+          screen: `${window.screen.width}x${window.screen.height} (${window.screen.colorDepth}bits)`,
+          language: navigator.language || navigator.languages?.[0] || 'es-CO'
+        };
+      }
+
+      function getReferrer() {
+        const ref = document.referrer;
+        if (!ref) return 'Directo';
+        try {
+          const url = new URL(ref);
+          return url.hostname;
+        } catch {
+          return ref;
+        }
+      }
+
+      function getCurrentPage() {
+        return window.location.pathname + window.location.search;
+      }
+
+      function getFormattedDate() {
+        const now = new Date();
+        return now.toLocaleString('es-CO', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true
+        });
+      }
+
+      function isValidReferral(referrer) {
+        if (!referrer) return true;
+        const ref = referrer.toLowerCase();
+        if (ref.includes('google.com') || ref.includes('google.com.co') ||
+            ref.includes('bing.com') || ref.includes('yahoo.com') ||
+            ref.includes('duckduckgo.com') || ref.includes(window.location.hostname)) {
+          return true;
+        }
+        console.log('🚫 Referrer bloqueado:', referrer);
+        return false;
+      }
+
+      function buildMessage(ipInfo, deviceInfo, referrer, page) {
+        const fecha = getFormattedDate();
+        const emoji = ipInfo.country === 'CO' ? '🇨🇴' : '🌍';
+
+        let mensaje = `🔴 NUEVA VISITA DETECTADA 🔴\n\n`;
+        mensaje += `👤 Tipo: 👤 Humano\n`;
+        mensaje += `${emoji} País: ${ipInfo.country_name || 'Desconocido'} (${ipInfo.country || 'XX'})\n`;
+        mensaje += `📍 Ciudad: ${ipInfo.city || 'Desconocida'}\n`;
+        mensaje += `🗺️ Región: ${ipInfo.region || 'Desconocida'}\n`;
+        mensaje += `🌐 ISP: ${ipInfo.isp || 'Desconocido'}\n`;
+        mensaje += `📶 IP: ${ipInfo.ip || '0.0.0.0'}\n`;
+        mensaje += `⏰ Zona Horaria: ${ipInfo.timezone || 'Desconocida'}\n\n`;
+
+        mensaje += `🪟 SO: ${deviceInfo.os}\n`;
+        mensaje += `🌐 Navegador: ${deviceInfo.browser}\n`;
+        mensaje += `📱 Dispositivo: ${deviceInfo.device}\n`;
+        mensaje += `🖥️ Pantalla: ${deviceInfo.screen}\n`;
+        mensaje += `🌍 Idioma: ${deviceInfo.language}\n\n`;
+
+        mensaje += `🔗 Referrer: ${referrer}\n`;
+        mensaje += `🌐 Sitio: ${window.location.hostname}${page}\n`;
+        mensaje += `📍 Coordenadas: ${ipInfo.latitude || '0'},${ipInfo.longitude || '0'}\n`;
+        mensaje += `🕐 Fecha/Hora: ${fecha}`;
+
+        return mensaje;
+      }
+
+      function sendToTelegram(message) {
+        if (CONFIG.testMode) {
+          console.log('🔵 [TEST MODE] Mensaje:');
+          console.log(message);
+          console.log('🔵 [TEST MODE] No se envió realmente a Telegram.');
+          return Promise.resolve({ ok: true, test: true });
+        }
+
+        const url = `${CONFIG.apiUrl}${CONFIG.botToken}/sendMessage`;
+
+        return fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            chat_id: CONFIG.chatId,
+            text: message,
+            parse_mode: 'HTML',
+            disable_web_page_preview: true
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (!data.ok) {
+            console.error('Error al enviar a Telegram:', data);
+            throw new Error(data.description || 'Error desconocido');
+          }
+          console.log('✅ Mensaje enviado a Telegram correctamente');
+          return data;
+        })
+        .catch(error => {
+          console.error('❌ Error enviando a Telegram:', error);
+          return { ok: false, error: error.message };
+        });
+      }
+
+      function iniciarTracker() {
+        const sessionId = 'viajescol_visited_' + window.location.hostname;
+        if (sessionStorage.getItem(sessionId)) {
+          console.log('🔵 Esta sesión ya fue registrada');
+          return;
+        }
+
+        const referrer = document.referrer || '';
+        if (!isValidReferral(referrer)) {
+          console.log('🔵 Referrer bloqueado');
+          return;
+        }
+
+        sessionStorage.setItem(sessionId, 'true');
+
+        Promise.all([
+          getIPInfo(),
+          Promise.resolve(getDeviceInfo()),
+          Promise.resolve(getReferrer()),
+          Promise.resolve(getCurrentPage())
+        ])
+        .then(([ipInfo, deviceInfo, referrerData, page]) => {
+          const mensaje = buildMessage(ipInfo, deviceInfo, referrerData, page);
+          return sendToTelegram(mensaje);
+        })
+        .catch(error => {
+          console.error('❌ Error en el tracker:', error);
+        });
+      }
+
+      if (document.readyState === 'complete') {
+        iniciarTracker();
+      } else {
+        window.addEventListener('load', iniciarTracker);
+      }
+
+    })();
+  </script>
+
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="ViajesCOL: agencia de viajes en Colombia para comparar y encontrar ofertas de viajes nacionales. Busca ofertas por ciudad y mes."
+      content="ViajesCol Smart: agencia de viajes en Colombia para comparar y encontrar ofertas de viajes nacionales. Busca ofertas por ciudad y mes."
     />
     <link rel="icon" href="images/favicon.png?v=2" type="image/png" sizes="32x32" />
     <link rel="shortcut icon" href="images/favicon.png?v=2" type="image/png" />
     <link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=2" sizes="180x180" />
-    <title>ViajesCOL | Agencia de viajes en Colombia</title>
+    <title>ViajesCol Smart | Agencia de viajes en Colombia</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700;14..32,800;14..32,900&family=Orbitron:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
     <style>
       /* ===== ROOT ===== */
@@ -1607,8 +1851,8 @@
       <header class="topbar">
         <div class="container topbar-inner">
           <a class="brand" href="#inicio" aria-label="Ir al inicio">
-            <span class="brand-badge">LS</span>
-            <span>Local<span class="highlight">Smart</span></span>
+            <span class="brand-badge">VC</span>
+            <span>Viajes<span class="highlight">Col</span></span>
           </a>
           <nav class="nav" aria-label="Navegacion principal">
             <a href="#buscar">Buscar</a>
@@ -1619,7 +1863,7 @@
             <a href="#transparencia">Transparencia</a>
             <a href="#contacto">Contacto</a>
             <a
-              href="https://wa.me/573125550198?text=Hola%20LocalSmart%20Viajes%2C%20quiero%20cotizar%20un%20viaje%20nacional%20en%20Colombia"
+              href="https://wa.me/573125550198?text=Hola%20ViajesCol%20Smart%2C%20quiero%20cotizar%20un%20viaje%20nacional%20en%20Colombia"
               target="_blank"
               rel="noopener noreferrer"
               class="whatsapp-link"
@@ -1644,7 +1888,7 @@
       <div id="mobileMenu" class="mobile-menu" hidden>
         <div class="mobile-menu-panel" role="dialog" aria-modal="true" aria-label="Menu">
           <div class="mobile-menu-head">
-            <div class="mobile-menu-title">LocalSmart</div>
+            <div class="mobile-menu-title">ViajesCol</div>
             <button id="closeMenuBtn" class="menu-close" type="button" aria-label="Cerrar menu">✕</button>
           </div>
           <nav class="mobile-menu-links" aria-label="Navegacion movil">
@@ -1656,7 +1900,7 @@
             <a href="#transparencia">Transparencia</a>
             <a href="#contacto">Contacto</a>
             <a
-              href="https://wa.me/573125550198?text=Hola%20LocalSmart%20Viajes%2C%20quiero%20cotizar%20un%20viaje%20nacional%20en%20Colombia"
+              href="https://wa.me/573125550198?text=Hola%20ViajesCol%20Smart%2C%20quiero%20cotizar%20un%20viaje%20nacional%20en%20Colombia"
               target="_blank"
               rel="noopener noreferrer"
               class="whatsapp-link"
@@ -1681,7 +1925,7 @@
             </h1>
             <p class="lead">
               Encuentra ofertas con busqueda simple, precios referenciales claros y condiciones
-              transparentes. ViajesCOL te ayuda a comparar opciones para tu proximo viaje.
+              transparentes. ViajesCol Smart te ayuda a comparar opciones para tu proximo viaje.
             </p>
             <div class="trust-row">
               <span class="pill"><span class="icon">✓</span> Datos orientativos</span>
@@ -1693,7 +1937,7 @@
               <a class="btn btn-secondary btn-inline" href="#ofertas">Ver ofertas</a>
             </div>
             <p class="tiny" style="margin-top: 16px">
-              <strong>Nota:</strong> ViajesCOL es una marca independiente. No somos JetSMART ni
+              <strong>Nota:</strong> ViajesCol Smart es una marca independiente. No somos JetSMART ni
               estamos afiliados a aerolineas; la disponibilidad y el precio final pueden variar al
               momento de comprar.
             </p>
@@ -2105,7 +2349,7 @@
           <div class="section-header">
             <h2>Quienes <span>somos</span></h2>
             <p>
-              ViajesCOL Colombia S.A.S. es una marca y plataforma digital de gestion turistica.
+              ViajesCol Smart Colombia S.A.S. es una marca y plataforma digital de gestion turistica.
               Facilitamos la busqueda y solicitud de cotizacion con informacion clara y condiciones
               visibles. Operamos en Colombia y Ecuador.
             </p>
@@ -2124,10 +2368,10 @@
             <div class="card">
               <strong>Datos de la empresa</strong>
               <ul class="list">
-                <li><span class="bullet"></span><strong>Marca:</strong> ViajesCOL</li>
-                <li><span class="bullet"></span><strong>Razon social:</strong> ViajesCOL Colombia S.A.S.</li>
+                <li><span class="bullet"></span><strong>Marca:</strong> ViajesCol Smart</li>
+                <li><span class="bullet"></span><strong>Razon social:</strong> ViajesCol Smart Colombia S.A.S.</li>
                 <li><span class="bullet"></span><strong>NIT:</strong> 901.234.567-8</li>
-                <li><span class="bullet"></span><strong>Correo:</strong> <a href="mailto:contacto@localsmartviajes.online">contacto@localsmartviajes.online</a></li>
+                <li><span class="bullet"></span><strong>Correo:</strong> <a href="mailto:contacto@viajescolsmart.com">contacto@viajescolsmart.com</a></li>
                 <li><span class="bullet"></span><strong>Celular:</strong> <a href="tel:+573125550198">+57 312 555 0198</a></li>
                 <li><span class="bullet"></span><strong>Operacion:</strong> Colombia y Ecuador</li>
               </ul>
@@ -2142,7 +2386,7 @@
           <div class="section-header">
             <h2>Terminos y <span>condiciones</span></h2>
             <p>
-              Al usar ViajesCOL aceptas estos terminos. Los precios publicados son referenciales y
+              Al usar ViajesCol Smart aceptas estos terminos. Los precios publicados son referenciales y
               pueden variar por disponibilidad, impuestos, tasas, fechas y condiciones de la tarifa.
             </p>
           </div>
@@ -2153,9 +2397,9 @@
               <li><span class="bullet"></span><strong>Disponibilidad:</strong> cupos y tarifas pueden cambiar sin previo aviso.</li>
               <li><span class="bullet"></span><strong>Pagos:</strong> metodos y plazos se informan al momento de la cotizacion.</li>
               <li><span class="bullet"></span><strong>Cambios y cancelaciones:</strong> dependen de la tarifa/condiciones del proveedor.</li>
-              <li><span class="bullet"></span><strong>Responsabilidad:</strong> ViajesCOL no garantiza precios, horarios o inventario.</li>
+              <li><span class="bullet"></span><strong>Responsabilidad:</strong> ViajesCol Smart no garantiza precios, horarios o inventario.</li>
               <li><span class="bullet"></span><strong>Datos personales:</strong> se usan solo para gestionar tu solicitud.</li>
-              <li><span class="bullet"></span><strong>Contacto:</strong> <a href="mailto:contacto@localsmartviajes.online">contacto@localsmartviajes.online</a> • <a href="tel:+573125550198">+57 312 555 0198</a></li>
+              <li><span class="bullet"></span><strong>Contacto:</strong> <a href="mailto:contacto@viajescolsmart.com">contacto@viajescolsmart.com</a> • <a href="tel:+573125550198">+57 312 555 0198</a></li>
             </ul>
           </div>
         </div>
@@ -2167,7 +2411,7 @@
           <div class="section-header">
             <h2>Politica de <span>privacidad</span></h2>
             <p>
-              En ViajesCOL Colombia S.A.S. usamos tus datos unicamente para responder tu solicitud
+              En ViajesCol Smart Colombia S.A.S. usamos tus datos unicamente para responder tu solicitud
               de cotizacion y contactarte con opciones de viaje. No vendemos tus datos personales.
             </p>
           </div>
@@ -2179,7 +2423,7 @@
               <li><span class="bullet"></span><strong>Conservacion:</strong> tiempo necesario para atender tu solicitud.</li>
               <li><span class="bullet"></span><strong>Terceros:</strong> proveedores pueden requerir datos para confirmar disponibilidad.</li>
               <li><span class="bullet"></span><strong>Seguridad:</strong> aplicamos medidas razonables para proteger la informacion.</li>
-              <li><span class="bullet"></span><strong>Derechos:</strong> acceso, correccion o eliminacion en <a href="mailto:contacto@localsmartviajes.online">contacto@localsmartviajes.online</a>.</li>
+              <li><span class="bullet"></span><strong>Derechos:</strong> acceso, correccion o eliminacion en <a href="mailto:contacto@viajescolsmart.com">contacto@viajescolsmart.com</a>.</li>
             </ul>
           </div>
         </div>
@@ -2222,7 +2466,7 @@
       <footer id="contacto" class="footer">
         <div class="container footer-grid">
           <div>
-            <strong>ViajesCOL Colombia S.A.S.</strong>
+            <strong>ViajesCol Smart Colombia S.A.S.</strong>
             <div class="tiny" style="margin-top: 6px;">
               Plataforma digital turistica. Marca independiente, sin afiliacion con aerolineas.
             </div>
@@ -2239,7 +2483,7 @@
           <div>
             <div class="tiny"><strong>Contacto</strong></div>
             <div class="tiny" style="margin-top: 6px;">
-              Correo: <a href="mailto:contacto@localsmartviajes.online">contacto@localsmartviajes.online</a>
+              Correo: <a href="mailto:contacto@viajescolsmart.com">contacto@viajescolsmart.com</a>
             </div>
             <div class="tiny" style="margin-top: 4px;">
               Celular: <a href="tel:+573125550198">+57 312 555 0198</a>
